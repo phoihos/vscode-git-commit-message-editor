@@ -1,0 +1,18 @@
+{
+  "types": [
+    { "type": "feat", "section": "Features" },
+    { "type": "fix", "section": "Bug Fixes" },
+    { "type": "docs", "section": "Others" },
+    { "type": "style", "hidden": true },
+    { "type": "refactor", "section": "Enhancements" },
+    { "type": "perf", "section": "Enhancements" },
+    { "type": "test", "hidden": true },
+    { "type": "build", "hidden": true },
+    { "type": "ci", "hidden": true },
+    { "type": "chore", "hidden": true },
+    { "type": "revert", "hidden": true },
+    { "type": "wip", "hidden": true },
+    { "type": "initial", "section": "Features" }
+  ],
+  "commitUrlFormat": "null"
+}
