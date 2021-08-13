@@ -11,7 +11,7 @@
   "bugs": {
     "url": "https://github.com/phoihos/vscode-git-commit-message-editor/issues"
   },
-  "homepage": "https://github.com/phoihos/vscode-git-commit-message-editor/blob/master/README.md",
+  "homepage": "https://github.com/phoihos/vscode-git-commit-message-editor#readme",
   "license": "MIT",
   "preview": true,
   "version": "0.1.0",
