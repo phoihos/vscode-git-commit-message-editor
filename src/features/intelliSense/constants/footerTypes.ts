@@ -10,7 +10,7 @@ export const footerTypes: IFooterType[] = [
     type: 'Closes',
     title: 'Referencing issues',
     description: 'A code change that related issues to close',
-    emojis: ['#️⃣'],
+    emojis: ['🔗'],
     sort: 97,
     separator: ' #'
   },
