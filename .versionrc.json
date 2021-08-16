@@ -14,5 +14,7 @@
     { "type": "wip", "hidden": true },
     { "type": "initial", "section": "Features" }
   ],
-  "commitUrlFormat": "null"
+  "commitUrlFormat": "h-null",
+  "compareUrlFormat": "v-null",
+  "releaseCommitMessageFormat": "chore(release): 🔖 v{{currentTag}}"
 }

@@ -126,7 +126,11 @@
   },
   "standard-version": {
     "scripts": {
-      "postchangelog": "replace '\\s*\\(\\[\\w+\\]\\(null\\)\\)' '' CHANGELOG.md"
+      "postchangelog": "replace '\\s*\\(\\[[a-f\\d]+\\]\\(h-null\\)\\)' '' CHANGELOG.md && replace '\\[(.+)\\]\\(v-null\\)' '$1' CHANGELOG.md"
+    },
+    "skip": {
+      "commit": true,
+      "tag": true
     }
   },
   "devDependencies": {
