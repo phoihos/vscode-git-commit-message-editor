@@ -10,7 +10,7 @@ Edit commit messages via VS Code's editor, and Autocomplete for Conventional Com
     - See [details](#editor) below
 - Supports IntelliSense feature to edit commit messages that conform to [Conventional Commits Specification](https://conventionalcommits.org/)
     - See [details](#intellisense) below
-- Supports Workspace level scope management
+- Supports Workspace level scopes management
     - See [details](#scope-completion) below
 - Supports [Gitmoji](https://gitmoji.dev/)
     - See [details](#gitmoji-completion) below
@@ -70,7 +70,7 @@ You can type the scope as wish, select one that saved, or create new scope by se
 
 ![Demo IntelliSense Summary 2](./images/readme/demo_intellisense_summary_2.gif)
 
-The scopes user created will be saved into `workspace/.vscode/settings.json`.
+The scope user created will be saved into `workspace/.vscode/settings.json`.
 
 #### Gitmoji completion
 
@@ -78,7 +78,7 @@ You can trigger the gitmoji suggestions by typing a trigger character `:` (colon
 
 ![Demo IntelliSense Summary 3](./images/readme/demo_intellisense_summary_3.gif)
 
-The gitmoji completion only work in the subject secion of the summary and offers the gitmoji suggestions by `Commit Type` that you typed.
+The gitmoji completion only work in the subject section of the summary and offers the gitmoji suggestions by `Commit Type` that you typed.
 
 #### Footer Type completion
 
@@ -115,7 +115,7 @@ Table of contributed settings (prefix "gitCommitMessageEditor."):
 | intelliSense.completion.enabled | `true`  | Controls whether the \"Quick suggestions\" feature is enabled or not                   |
 | intelliSense.completion.scopes  | `[]`    | Scopes that user created (Scopes will be saved into `workspace/.vscode/settings.json`) |
 
-And recommends to add a setting below into your Global or Workspace `settings.json` to follow the **Git 50/72 rule**.
+And recommends adding a setting below into your Global or Workspace `settings.json`, if you want to follow the **Git 50/72 rule**.
 
 ```json
 "[git-commit]": {
@@ -128,7 +128,7 @@ And recommends to add a setting below into your Global or Workspace `settings.js
 
 ## Issues
 
-If you find any problems using this extension or you want to propose new features to it, feel free to open an issue on [Github](https://github.com/phoihos/vscode-git-commit-message-editor/issues).
+If you find any problems using this extension, or you want to propose new features to it, feel free to open an issue on [GitHub](https://github.com/phoihos/vscode-git-commit-message-editor/issues).
 
 ## Release Notes
 
