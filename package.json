@@ -122,15 +122,12 @@
     "pretest": "npm run test-compile && npm run lint",
     "lint": "eslint src --ext ts",
     "test": "node ./out/test/runTest.js",
-    "release": "standard-version"
+    "release": "standard-version --skip.tag",
+    "release:tag": "standard-version --skip.bump --skip.changelog --skip.commit"
   },
   "standard-version": {
     "scripts": {
-      "postchangelog": "replace '\\s*\\(\\[[a-f\\d]+\\]\\(h-null\\)\\)' '' CHANGELOG.md && replace '\\[(.+)\\]\\(v-null\\)' '$1' CHANGELOG.md"
-    },
-    "skip": {
-      "commit": true,
-      "tag": true
+      "postchangelog": "replace '\\s*\\(\\[[a-f\\d]+\\]\\(h-null\\)\\)' '' CHANGELOG.md && replace '\\[(.+)\\]\\(v-null\\)' '$1' CHANGELOG.md && replace '(\\r?\\n){3,}' '$1$1' CHANGELOG.md"
     }
   },
   "devDependencies": {
