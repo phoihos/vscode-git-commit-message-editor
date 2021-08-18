@@ -39,7 +39,7 @@ export class GitCommitCompletionItemProvider
     document: vscode.TextDocument,
     position: vscode.Position,
     _token: vscode.CancellationToken,
-    _context: vscode.CompletionContext
+    context: vscode.CompletionContext
   ): vscode.ProviderResult<vscode.CompletionItem[]> {
     if (this._config.completionEnabled === false) return [];
 
@@ -65,7 +65,8 @@ export class GitCommitCompletionItemProvider
             position,
             TokenCompletionItemManager.emojiRangeRegex
           );
-          const filterToken = tokens.isBreaking ? '!' : tokens.type;
+          const needsFilter = context.triggerKind === vscode.CompletionTriggerKind.TriggerCharacter;
+          const filterToken = needsFilter ? (tokens.isBreaking ? '!' : tokens.type) : '*';
 
           const fallbackItems: vscode.CompletionItem[] = [];
           const items = this._itemManager.summaryEmojiItems.filter((e) => {

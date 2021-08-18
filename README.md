@@ -36,7 +36,7 @@ Or select **Open Commit Message Editor** from the overflow menu in the repositor
 
 ### IntelliSense
 
-You can trigger **IntelliSense** in the commit message editor window by typing <kbd>Ctrl</kbd>+<kbd>Space</kbd> or by typing the letters.  
+You can trigger **IntelliSense** in the commit message editor window by typing <kbd>Ctrl</kbd>+<kbd>Space</kbd> or by typing the letters.
 > Also supported in the [VS Code as Git editor](https://code.visualstudio.com/docs/editor/versioncontrol#_vs-code-as-git-editor) mode.
 
 ![Demo IntelliSense Summary 1](./images/readme/demo_intellisense_summary_1.gif)
@@ -79,6 +79,7 @@ You can trigger the gitmoji suggestions by typing a trigger character `:` (colon
 ![Demo IntelliSense Summary 3](./images/readme/demo_intellisense_summary_3.gif)
 
 The gitmoji completion only work in the subject section of the summary and offers the gitmoji suggestions by `Commit Type` that you typed.
+> **Tip:** If you want to show all gitmoji suggestions, cancel (pressing <kbd>Esc</kbd>) the suggestions widget and re-trigger by typing <kbd>Ctrl</kbd>+<kbd>Space</kbd> follow the `:` (colon).
 
 #### Footer Type completion
 
