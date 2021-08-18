@@ -9,7 +9,7 @@ export const footerTypes: IFooterType[] = [
   {
     type: 'Closes',
     title: 'Referencing issues',
-    description: 'A code change that related issues to close',
+    description: 'A code change that related issues to close (for example, Closes #133)',
     emojis: ['🔗'],
     sort: 97,
     separator: ' #'
@@ -17,7 +17,7 @@ export const footerTypes: IFooterType[] = [
   {
     type: 'Refs',
     title: 'Referencing commits',
-    description: 'A code change that related other commits',
+    description: 'A code change that related other commits (for example, Refs: 676104e, a215868)',
     emojis: ['🧲'],
     sort: 98,
     separator: ': '

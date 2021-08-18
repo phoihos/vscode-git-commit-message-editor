@@ -89,11 +89,11 @@ Also supports the footer type completion.
 
 List of available conventional footer types:
 
-| Type            | Title               | Description                                      |
-| --------------- | ------------------- | ------------------------------------------------ |
-| Closes          | Referencing issues  | A code change that related issues to close       |
-| Refs            | Referencing commits | A code change that related other commits         |
-| BREAKING CHANGE | Breaking changes    | A code change that causes other features to fail |
+| Type            | Title               | Description                                                                    |
+| --------------- | ------------------- | ------------------------------------------------------------------------------ |
+| Closes          | Referencing issues  | A code change that related issues to close (for example, Closes #133)          |
+| Refs            | Referencing commits | A code change that related other commits (for example, Refs: 676104e, a215868) |
+| BREAKING CHANGE | Breaking changes    | A code change that causes other features to fail                               |
 
 ### CodeLens
 
