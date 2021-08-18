@@ -109,7 +109,8 @@ export function findBodyFooterLines(
   const footerLineStart = matchedFooterLineStart ?? greedyFooterLineStart ?? emptyFooterLineStart;
   if (footerLineStart === undefined) return [bodyLines, []];
 
-  const bodyLineEnd =
-    footerLineStart === greedyFooterLineStart ? undefined : Math.max(footerLineStart - 1, 0);
+  const hasGreedyFooterLines = footerLineStart === greedyFooterLineStart;
+  const bodyLineEnd = hasGreedyFooterLines ? undefined : Math.max(footerLineStart - 1, 0);
+
   return [bodyLines.slice(0, bodyLineEnd), bodyLines.slice(footerLineStart)];
 }
