@@ -46,9 +46,9 @@ export class ShowRecentCommitsCommand implements ICommand {
     const pickedItem = await vscode.window.showQuickPick(recentCommits.pickItems, pickOptions);
     if (pickedItem === undefined) return;
 
-    await editor.insertSnippet(
-      new vscode.SnippetString(pickedItem.commitMessage),
-      recentCommits.insertRange
-    );
+    // escape `$`
+    const commitMessage = pickedItem.commitMessage.replace(/(\$)/g, '\\$');
+
+    await editor.insertSnippet(new vscode.SnippetString(commitMessage), recentCommits.insertRange);
   }
 }

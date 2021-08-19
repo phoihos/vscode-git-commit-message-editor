@@ -34,8 +34,8 @@
       "description": "About the **IntelliSense** feature"
     },
     {
-      "scope": "Pasrer",
-      "description": "About the **Pasrer** feature"
+      "scope": "Parser",
+      "description": "About the **Parser** feature"
     }
   ]
 }

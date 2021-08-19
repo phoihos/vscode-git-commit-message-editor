@@ -20,7 +20,7 @@ export interface ITokens {
 }
 
 // see: https://github.com/conventional-commits/parser#the-grammar
-const _summaryTokenRegex = /^(\w+)(\(([\w\-\.]*)(\))?)?(\!)?(: (.*))?$/;
+const _summaryTokenRegex = /^(\w+)(\((\$?[\w\-\.]*)(\))?)?(\!)?(: (.*))?$/;
 const _footerTokenRegex = /^(([\w\-]+)|(\w+ ?\w*|\!))((: | #)(.*))?$/;
 const _footerBcTokenRegexes = [/^BREAKING-CHANGE$/i, /^BREAKING (C(H(A(N(GE?)?)?)?)?)?|\!$/i];
 
@@ -44,7 +44,7 @@ export function parseSummary(summary: string): ITokens {
   }
 
   tokens.type = match[1]; // (\w+)
-  tokens.scope = match[3] ?? ''; // ([\w\-\.]*)
+  tokens.scope = match[3] ?? ''; // (\$?[\w\-\.]*)
   tokens.desc = match[7] ?? ''; // (.*)
 
   tokens.isBreaking = match[5] ? true : false; // (\!)?
@@ -53,7 +53,7 @@ export function parseSummary(summary: string): ITokens {
   if (match[6] !== undefined) {
     tokens.tokenTypeAt = ETokenType.Desc;
   }
-  // (\(([\w\-\.]*)(\))?)?
+  // (\((\$?[\w\-\.]*)(\))?)?
   else if (match[2] !== undefined) {
     tokens.tokenTypeAt = match[4] !== undefined ? ETokenType.Partial : ETokenType.Scope; // (\))?
   } else {

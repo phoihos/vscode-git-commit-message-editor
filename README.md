@@ -70,6 +70,8 @@ You can type the scope as wish, select one that saved, or create new scope by se
 
 ![Demo IntelliSense Summary 2](./images/readme/demo_intellisense_summary_2.gif)
 
+> **Note:** The scope allow only words, underscores, hyphens and dots (can optionally begin with $).
+
 The scope user created will be saved into `workspace/.vscode/settings.json`.
 
 #### Gitmoji completion

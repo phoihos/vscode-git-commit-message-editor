@@ -27,7 +27,7 @@ export class EmojiCompletionItem extends TokenCompletionItem {
 }
 
 export class TokenCompletionItemManager {
-  public static readonly scopeRangeRegex = /\([\w\-\.]*[\(\) ]*/;
+  public static readonly scopeRangeRegex = /\(\$?[\w\-\.]*[\(\) ]*/;
   public static readonly emojiRangeRegex = /:[-+_a-z0-9]*(:? *)/;
 
   public readonly summaryTypeItems: TokenCompletionItem[];

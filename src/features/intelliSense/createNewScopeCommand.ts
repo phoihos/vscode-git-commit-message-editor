@@ -21,36 +21,44 @@ export class CreateNewScopeCommand implements ICommand {
 
     const userScopes = this._config.userScopes;
 
-    const scope = await vscode.window.showInputBox(this._getScopeInputBoxOptions(userScopes));
+    let scope = await vscode.window.showInputBox(this._getScopeInputBoxOptions(userScopes));
     if (scope === undefined) return;
 
-    const desc = await vscode.window.showInputBox(this._getDescInputBoxOptions(scope));
-    if (desc === undefined) return;
+    let description = await vscode.window.showInputBox(this._getDescInputBoxOptions(scope));
+    if (description === undefined) return;
 
-    userScopes.push({ scope, description: desc.length > 0 ? desc.trim() : undefined });
-    await this._config.updateUserScopes(userScopes);
+    scope = scope.trim();
+    description = description.length > 0 ? description.trim() : undefined;
+
+    await this._config.updateUserScopes(userScopes.concat({ scope, description }));
 
     const document = editor.document;
     const position = editor.selection.start;
     const insertRange = document.getWordRangeAtPosition(position, this._scopeRangeRegex);
 
-    await editor.insertSnippet(new vscode.SnippetString('(' + scope + ')'), insertRange);
+    // escape `$`
+    scope = '(' + scope.replace(/(\$)/g, '\\$') + ')';
+
+    await editor.insertSnippet(new vscode.SnippetString(scope), insertRange);
   }
 
   private _getScopeInputBoxOptions(scopes: ISummaryScope[]): vscode.InputBoxOptions {
+    const lowerScopes = scopes.map((e) => e.scope.toLowerCase());
+
     return {
       placeHolder: 'Input new scope value',
       validateInput: (value) => {
         if (value.length === 0) return 'Not allow empty value';
 
         const lowerScope = value.trim().toLowerCase();
+
         if (lowerScope.length === 0) return 'Not allow only whitespaces';
+        if (lowerScope === '$') return 'Not allow only $';
+        if (lowerScopes.includes(lowerScope)) return 'Already exists';
 
-        if (scopes.some((e) => e.scope.toLowerCase() === lowerScope)) return 'Already exists';
-
-        return /^[\w\-\.]+$/.test(lowerScope)
+        return /^\$?[\w\-\.]+$/.test(lowerScope)
           ? undefined
-          : 'Allow only words, underscores, hyphens and dots';
+          : 'Allow only words, underscores, hyphens and dots (can optionally begin with $)';
       }
     };
   }
