@@ -34,6 +34,12 @@ Or select **Open Commit Message Editor** from the overflow menu in the repositor
 
 ![Demo Editor 2](./images/readme/demo_editor_2.png)
 
+Type commit messages with **IntelliSense** feature, and then save it. The **Source Control** Input Box be filled with the message you typed.
+
+![Demo Editor 3](./images/readme/demo_editor_3.gif)
+
+> **Tip:** If you don't want to close the commit message editor window after saving, change `gitCommitMessageEditor.editor.keepAfterSave` option to `true`. (**Note:** Auto-focusing to the **Source Control** view only work with the option is `false`.)
+
 ### IntelliSense
 
 You can trigger **IntelliSense** in the commit message editor window by typing <kbd>Ctrl</kbd>+<kbd>Space</kbd> or by typing the letters.
@@ -93,7 +99,7 @@ List of available conventional footer types:
 
 | Type            | Title               | Description                                                                    |
 | --------------- | ------------------- | ------------------------------------------------------------------------------ |
-| Closes          | Referencing issues  | A code change that related issues to close (for example, Closes #133)          |
+| Closes          | Referencing issues  | A code change that related issues to close (for example, Closes #​133)         |
 | Refs            | Referencing commits | A code change that related other commits (for example, Refs: 676104e, a215868) |
 | BREAKING CHANGE | Breaking changes    | A code change that causes other features to fail                               |
 
