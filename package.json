@@ -25,6 +25,7 @@
     "git",
     "commit",
     "conventional-commits",
+    "conventional-changelog",
     "commitizen",
     "gitmoji"
   ],
