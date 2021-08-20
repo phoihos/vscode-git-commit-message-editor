@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 0.3.1 (2021-08-20)
+
+### Others
+
+* Update README
+    * Add more description to **Editor** section
+    * Escape `#133` link to non-link
+
 ## 0.3.0 (2021-08-19)
 
 ### Features
