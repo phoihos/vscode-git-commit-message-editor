@@ -128,7 +128,8 @@
   },
   "standard-version": {
     "scripts": {
-      "postchangelog": "replace '\\s*\\(\\[[a-f\\d]+\\]\\(h-null\\)\\)' '' CHANGELOG.md && replace '\\[(.+)\\]\\(v-null\\)' '$1' CHANGELOG.md && replace '(\\r?\\n){3,}' '$1$1' CHANGELOG.md"
+      "postchangelog": "replace '\\s*\\(\\[[a-f\\d]+\\]\\(h-null\\)\\)' '' CHANGELOG.md && replace '\\[(.+)\\]\\(v-null\\)' '$1' CHANGELOG.md && replace '(\\r?\\n){3,}' '$1$1' CHANGELOG.md",
+      "posttag": "git push --follow-tags"
     }
   },
   "devDependencies": {
