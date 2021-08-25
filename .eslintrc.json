@@ -7,14 +7,23 @@
   },
   "plugins": ["@typescript-eslint"],
   "rules": {
+    "@typescript-eslint/semi": "warn",
     "@typescript-eslint/naming-convention": [
-      "error",
+      "warn",
       {
         "selector": "enumMember",
         "format": ["PascalCase"]
       }
     ],
-    "@typescript-eslint/semi": "error",
+    "@typescript-eslint/explicit-member-accessibility": [
+      "warn",
+      {
+        "accessibility": "off",
+        "overrides": {
+          "methods": "explicit"
+        }
+      }
+    ],
     "curly": ["error", "multi-line", "consistent"],
     "eqeqeq": "error",
     "no-throw-literal": "warn",

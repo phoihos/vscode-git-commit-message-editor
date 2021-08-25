@@ -1,108 +1,72 @@
 import * as vscode from 'vscode';
 
+import { IGitService } from '../../gitService';
 import { IConfiguration } from '../../configuration';
-import { ELineType, getLineType } from '../parser/textDocumentParser';
-import { ETokenType, parseSummary, parseFooter } from '../parser/textLineParser';
 
 import * as vsceUtil from '@phoihos/vsce-util';
 import { CreateNewScopeCommand } from './createNewScopeCommand';
-import { TokenCompletionItemManager } from './tokenCompletionItemManager';
+import { FormatSeparatorCommand } from './formatSeparatorCommand';
+import { TriggerSuggestCommand } from './triggerSuggestCommand';
 
-export class GitCommitCompletionItemProvider
-  extends vsceUtil.Disposable
-  implements vscode.CompletionItemProvider
-{
+import { SCOPE_RANGE_REGEX, SummaryCompletionItemManager } from './summaryCompletionItemManager';
+import { FooterCompletionItemManager } from './footerCompletionItemManager';
+import { TextDocumentParserProxy } from './textDocumentParserProxy';
+
+import { SummaryCompletionItemProvider } from './summaryCompletionItemProvider';
+import { FooterCompletionItemProvider } from './footerCompletionItemProvider';
+import { TextDocumentEventListener } from './textDocumentEventListener';
+
+export class GitCommitCompletionItemProvider extends vsceUtil.Disposable {
   private readonly _selector = 'git-commit';
-  private readonly _triggers = ['(', ':'];
 
-  private readonly _itemManager: TokenCompletionItemManager;
-
-  private readonly _config: IConfiguration;
-
-  constructor(config: IConfiguration) {
+  constructor(git: IGitService, config: IConfiguration) {
     super();
 
-    const command = new CreateNewScopeCommand(TokenCompletionItemManager.scopeRangeRegex, config);
-    this._itemManager = new TokenCompletionItemManager(command.id, config);
+    const createNewScopeCommand = new CreateNewScopeCommand(SCOPE_RANGE_REGEX, config);
+    const formatSeparatorCommand = new FormatSeparatorCommand();
+    const triggerSuggestCommand = new TriggerSuggestCommand();
 
-    this._config = config;
+    const summaryCompletionItemManager = new SummaryCompletionItemManager(
+      createNewScopeCommand.id,
+      config
+    );
+    const footerCompletionItemManager = new FooterCompletionItemManager(
+      triggerSuggestCommand.id,
+      git,
+      config
+    );
+
+    const textDocumentParserProxy = new TextDocumentParserProxy();
+
+    const commandManager = new vsceUtil.CommandManager();
+    commandManager.register(createNewScopeCommand);
+    commandManager.register(formatSeparatorCommand);
+    commandManager.register(triggerSuggestCommand);
 
     const subscriptions: vscode.Disposable[] = [];
     subscriptions.push(
-      vscode.commands.registerCommand(command.id, command.execute, command),
-      vscode.languages.registerCompletionItemProvider(this._selector, this, ...this._triggers)
+      commandManager,
+      new SummaryCompletionItemProvider(
+        this._selector,
+        summaryCompletionItemManager,
+        textDocumentParserProxy,
+        config
+      ),
+      new FooterCompletionItemProvider(
+        this._selector,
+        footerCompletionItemManager,
+        textDocumentParserProxy,
+        config
+      ),
+      new TextDocumentEventListener(
+        this._selector,
+        formatSeparatorCommand.id,
+        triggerSuggestCommand.id,
+        footerCompletionItemManager,
+        textDocumentParserProxy,
+        git
+      )
     );
     this.register(subscriptions);
-  }
-
-  provideCompletionItems(
-    document: vscode.TextDocument,
-    position: vscode.Position,
-    _token: vscode.CancellationToken,
-    context: vscode.CompletionContext
-  ): vscode.ProviderResult<vscode.CompletionItem[]> {
-    if (this._config.completionEnabled === false) return [];
-
-    const lineType = getLineType(document, position.line);
-
-    if (lineType === ELineType.Summary) {
-      const line = document.lineAt(position.line);
-      const leadingText = line.text.substring(0, position.character);
-      const tokens = parseSummary(leadingText);
-
-      if (tokens.tokenTypeAt === ETokenType.None || tokens.tokenTypeAt === ETokenType.Type) {
-        return this._itemManager.summaryTypeItems;
-      } else if (tokens.tokenTypeAt === ETokenType.Scope) {
-        return this._itemManager.summaryScopeItems.map((e) => {
-          e.range = document.getWordRangeAtPosition(position, e.rangeRegex);
-          return e;
-        });
-      } else if (tokens.tokenTypeAt === ETokenType.Desc) {
-        const leadingChar = line.text.charAt(position.character - 1);
-
-        if (leadingChar === ':') {
-          const range = document.getWordRangeAtPosition(
-            position,
-            TokenCompletionItemManager.emojiRangeRegex
-          );
-          const needsFilter = context.triggerKind === vscode.CompletionTriggerKind.TriggerCharacter;
-          const filterToken = needsFilter ? (tokens.isBreaking ? '!' : tokens.type) : '*';
-
-          const fallbackItems: vscode.CompletionItem[] = [];
-          const items = this._itemManager.summaryEmojiItems.filter((e) => {
-            e.range = range;
-            if (e.filterToken === filterToken) {
-              e.documentation = e.filterDoc;
-              return true;
-            }
-            e.documentation = e.nonFilterDoc;
-            fallbackItems.push(e);
-            return false;
-          });
-
-          return items.length > 0 ? items : fallbackItems;
-        }
-      }
-    } else if (lineType & ELineType.Footer) {
-      const line = document.lineAt(position.line);
-      const leadingText = line.text.substring(0, position.character);
-      const tokens = parseFooter(leadingText);
-
-      if (tokens.tokenTypeAt === ETokenType.None || tokens.tokenTypeAt === ETokenType.Type) {
-        return this._itemManager.footerTypeItems.map((e) => {
-          e.range = document.getWordRangeAtPosition(position, e.rangeRegex);
-          return e;
-        });
-      }
-    }
-
-    return [];
-  }
-
-  resolveCompletionItem(
-    item: vscode.CompletionItem,
-    _token: vscode.CancellationToken
-  ): vscode.ProviderResult<vscode.CompletionItem> {
-    return item;
   }
 }

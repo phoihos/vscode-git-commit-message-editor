@@ -35,7 +35,7 @@ export class GitCommitCodeLensProvider
     this.register(subscriptions);
   }
 
-  provideCodeLenses(
+  public provideCodeLenses(
     document: vscode.TextDocument,
     _token: vscode.CancellationToken
   ): vscode.ProviderResult<vscode.CodeLens[]> {
@@ -66,7 +66,7 @@ export class GitCommitCodeLensProvider
       });
   }
 
-  resolveCodeLens(
+  public resolveCodeLens(
     codeLens: vscode.CodeLens,
     _token: vscode.CancellationToken
   ): vscode.ProviderResult<vscode.CodeLens> {

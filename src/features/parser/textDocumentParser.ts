@@ -10,7 +10,7 @@ export enum ELineType {
 }
 
 // see: https://github.com/conventional-commits/parser#the-grammar
-const _footerBcTokenRegexes = [/^(BREAKING CHANGE|\!)(: )(.*)$/i, /^([\w\-]+)(: | #)(.*)$/];
+const _FOOTER_BC_REGEXES = [/^(BREAKING CHANGE|\!)(: )(.*)$/i, /^([\w\-]+)(: | #)(.*)$/];
 
 export function getLineType(
   document: vscode.TextDocument,
@@ -88,7 +88,7 @@ export function findBodyFooterLines(
         if (line.isEmptyOrWhitespace) {
           emptyFooterLineStart = emptyFooterLineStart ?? bodyLines.length;
         } else {
-          if (_footerBcTokenRegexes.some((regex) => regex.test(line.text))) {
+          if (_FOOTER_BC_REGEXES.some((regex) => regex.test(line.text))) {
             matchedFooterLineStart = bodyLines.length;
           } else {
             greedyFooterLineStart = greedyFooterLineStart ?? bodyLines.length;

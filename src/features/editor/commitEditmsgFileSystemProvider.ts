@@ -23,10 +23,10 @@ export class CommitEditmsgFileSystemProvider
   constructor(git: IGitService, config: IConfiguration) {
     super();
 
+    const command = new OpenEditorCommand(this._scheme, git);
+
     this._git = git;
     this._config = config;
-
-    const command = new OpenEditorCommand(this._scheme, git);
 
     const subscriptions: vscode.Disposable[] = [];
     subscriptions.push(
@@ -36,15 +36,18 @@ export class CommitEditmsgFileSystemProvider
     this.register(subscriptions);
   }
 
-  get onDidChangeFile(): vscode.Event<vscode.FileChangeEvent[]> {
+  public get onDidChangeFile(): vscode.Event<vscode.FileChangeEvent[]> {
     return this._onDidChangeFile.event;
   }
 
-  watch(_uri: vscode.Uri, _options: { recursive: boolean; excludes: string[] }): vscode.Disposable {
+  public watch(
+    _uri: vscode.Uri,
+    _options: { recursive: boolean; excludes: string[] }
+  ): vscode.Disposable {
     return new vscode.Disposable(() => {});
   }
 
-  stat(_uri: vscode.Uri): vscode.FileStat {
+  public stat(_uri: vscode.Uri): vscode.FileStat {
     return {
       type: vscode.FileType.File,
       ctime: Date.now(),
@@ -53,32 +56,27 @@ export class CommitEditmsgFileSystemProvider
     };
   }
 
-  readDirectory(_uri: vscode.Uri): [string, vscode.FileType][] {
+  public readDirectory(_uri: vscode.Uri): [string, vscode.FileType][] {
     return [];
   }
 
-  createDirectory(_uri: vscode.Uri): void {
+  public createDirectory(_uri: vscode.Uri): void {
     throw new Error('Method not implemented.');
   }
 
-  readFile(uri: vscode.Uri): Uint8Array {
-    const lowerPath = uri.path.toLowerCase();
-    const repository = this._git.api?.repositories.find((e) =>
-      lowerPath.includes(e.rootUri.path.toLowerCase())
-    );
+  public readFile(uri: vscode.Uri): Uint8Array {
+    const repository = this._git.getRepository(uri);
+    if (repository === undefined) return new Uint8Array();
 
-    return this._encorder.encode(repository?.inputBox.value ?? '');
+    return this._encorder.encode(repository.inputBox.value);
   }
 
-  writeFile(
+  public writeFile(
     uri: vscode.Uri,
     content: Uint8Array,
     _options: { create: boolean; overwrite: boolean }
   ): void | Thenable<void> {
-    const lowerPath = uri.path.toLowerCase();
-    const repository = this._git.api?.repositories.find((e) =>
-      lowerPath.includes(e.rootUri.path.toLowerCase())
-    );
+    const repository = this._git.getRepository(uri);
     if (repository === undefined) return new Promise(() => {});
 
     const message = this._decorder.decode(content);
@@ -95,11 +93,11 @@ export class CommitEditmsgFileSystemProvider
     }
   }
 
-  delete(_uri: vscode.Uri, _options: { recursive: boolean }): void {
+  public delete(_uri: vscode.Uri, _options: { recursive: boolean }): void {
     throw new Error('Method not implemented.');
   }
 
-  rename(_oldUri: vscode.Uri, _newUri: vscode.Uri, _options: { overwrite: boolean }): void {
+  public rename(_oldUri: vscode.Uri, _newUri: vscode.Uri, _options: { overwrite: boolean }): void {
     throw new Error('Method not implemented.');
   }
 }

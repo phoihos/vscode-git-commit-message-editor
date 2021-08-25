@@ -1,7 +1,6 @@
 import * as vscode from 'vscode';
 
 import { ICommand } from '@phoihos/vsce-util';
-
 import { IRecentCommits, RecentCommitsResolver } from './recentCommitsResolver';
 
 export class ShowRecentCommitsCommand implements ICommand {
@@ -13,7 +12,7 @@ export class ShowRecentCommitsCommand implements ICommand {
     this._resolver = resolver;
   }
 
-  async execute(recentCommits?: IRecentCommits): Promise<void> {
+  public async execute(recentCommits?: IRecentCommits): Promise<void> {
     const editor = vscode.window.activeTextEditor;
     if (editor === undefined) return;
 

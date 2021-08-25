@@ -3,6 +3,7 @@ import { ISummaryType } from './summaryTypes';
 export interface IFooterType extends ISummaryType {
   readonly separator: string;
   readonly regex?: string;
+  readonly descType?: 'issue' | 'commit';
 }
 
 export const footerTypes: IFooterType[] = [
@@ -12,7 +13,8 @@ export const footerTypes: IFooterType[] = [
     description: 'A code change that related issues to close (for example, Closes #133)',
     emojis: ['🔗'],
     sort: 97,
-    separator: ' #'
+    separator: ' #',
+    descType: 'issue'
   },
   {
     type: 'Refs',
@@ -20,7 +22,8 @@ export const footerTypes: IFooterType[] = [
     description: 'A code change that related other commits (for example, Refs: 676104e, a215868)',
     emojis: ['🧲'],
     sort: 98,
-    separator: ': '
+    separator: ': ',
+    descType: 'commit'
   },
   {
     type: 'BREAKING CHANGE',

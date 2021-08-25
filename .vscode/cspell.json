@@ -4,6 +4,6 @@
   "version": "0.1",
   "enabled": true,
   "allowCompoundWords": true,
-  "words": ["eqeqeq", "phoihos", "gitmoji", "gitmojis"],
+  "words": ["eqeqeq", "phoihos", "gitmoji", "gitmojis", "octokit", "nbsp"],
   "flagWords": []
 }

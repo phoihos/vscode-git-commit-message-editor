@@ -1,0 +1,96 @@
+import * as vscode from 'vscode';
+
+import { IConfiguration } from '../../configuration';
+
+import * as vsceUtil from '@phoihos/vsce-util';
+import { EMOJI_RANGE_REGEX, SummaryCompletionItemManager } from './summaryCompletionItemManager';
+import { TextDocumentParserProxy, ELineType, ETokenType } from './textDocumentParserProxy';
+import { parseSummary } from './textDocumentParserProxy';
+
+export class SummaryCompletionItemProvider
+  extends vsceUtil.Disposable
+  implements vscode.CompletionItemProvider
+{
+  private readonly _triggers = ['(', ':'];
+
+  private readonly _itemManager: SummaryCompletionItemManager;
+  private readonly _parserProxy: TextDocumentParserProxy;
+
+  private readonly _config: IConfiguration;
+
+  constructor(
+    selector: string,
+    itemManager: SummaryCompletionItemManager,
+    parserProxy: TextDocumentParserProxy,
+    config: IConfiguration
+  ) {
+    super();
+
+    this._itemManager = itemManager;
+    this._parserProxy = parserProxy;
+
+    this._config = config;
+
+    const subscriptions: vscode.Disposable[] = [];
+    subscriptions.push(
+      vscode.languages.registerCompletionItemProvider(selector, this, ...this._triggers)
+    );
+    this.register(subscriptions);
+  }
+
+  public provideCompletionItems(
+    document: vscode.TextDocument,
+    position: vscode.Position,
+    _token: vscode.CancellationToken,
+    context: vscode.CompletionContext
+  ): vscode.ProviderResult<vscode.CompletionItem[]> {
+    if (this._config.completionEnabled === false) return [];
+
+    const lineType = this._parserProxy.getLineType(document, position.line);
+
+    if (lineType === ELineType.Summary) {
+      const line = document.lineAt(position.line);
+      const leadingText = line.text.substring(0, position.character);
+      const tokens = parseSummary(leadingText);
+
+      if (tokens.tokenTypeAt === ETokenType.None || tokens.tokenTypeAt === ETokenType.Type) {
+        return this._itemManager.typeItems;
+      } else if (tokens.tokenTypeAt === ETokenType.Scope) {
+        return this._itemManager.scopeItems.map((e) => {
+          e.range = document.getWordRangeAtPosition(position, e.rangeRegex);
+          return e;
+        });
+      } else if (tokens.tokenTypeAt === ETokenType.Desc) {
+        const emojiRange = document.getWordRangeAtPosition(position, EMOJI_RANGE_REGEX);
+
+        if (emojiRange !== undefined) {
+          const needsFilter = context.triggerKind === vscode.CompletionTriggerKind.TriggerCharacter;
+          const filterToken = needsFilter ? (tokens.isBreaking ? '!' : tokens.type) : '*';
+
+          const fallbackItems: vscode.CompletionItem[] = [];
+          const items = this._itemManager.emojiItems.filter((e) => {
+            e.range = emojiRange;
+            if (e.filterToken === filterToken) {
+              e.documentation = e.filterDoc;
+              return true;
+            }
+            e.documentation = e.nonFilterDoc;
+            fallbackItems.push(e);
+            return false;
+          });
+
+          return items.length > 0 ? items : fallbackItems;
+        }
+      }
+    }
+
+    return [];
+  }
+
+  public resolveCompletionItem(
+    item: vscode.CompletionItem,
+    _token: vscode.CancellationToken
+  ): vscode.ProviderResult<vscode.CompletionItem> {
+    return item;
+  }
+}

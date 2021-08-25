@@ -2,11 +2,11 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 
-import getGitService, { IGitService } from './gitService';
-import getConfiguration, { IConfiguration } from './configuration';
-
 import vsceUtil from '@phoihos/vsce-util';
 import features from './features';
+
+import getGitService, { IGitService } from './gitService';
+import getConfiguration, { IConfiguration } from './configuration';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -15,7 +15,8 @@ export function activate(context: vscode.ExtensionContext) {
   const config = getConfiguration();
 
   context.subscriptions.push(registerProviders(git, config));
-  context.subscriptions.push(registerEvents());
+  context.subscriptions.push(config);
+  context.subscriptions.push(git);
 }
 
 function registerProviders(git: IGitService, config: IConfiguration): vscode.Disposable {
@@ -23,17 +24,9 @@ function registerProviders(git: IGitService, config: IConfiguration): vscode.Dis
 
   aggregateProviders.add(new features.CommitEditmsgFileSystemProvider(git, config));
   aggregateProviders.add(new features.GitCommitCodeLensProvider(git, config));
-  aggregateProviders.add(new features.GitCommitCompletionItemProvider(config));
+  aggregateProviders.add(new features.GitCommitCompletionItemProvider(git, config));
 
   return aggregateProviders;
-}
-
-function registerEvents(): vscode.Disposable {
-  const aggregateEventListener = new vsceUtil.AggregateEventListener();
-
-  aggregateEventListener.add(new features.FormatSeparatorEventListener());
-
-  return aggregateEventListener;
 }
 
 // this method is called when your extension is deactivated

@@ -2,47 +2,29 @@ import * as vscode from 'vscode';
 
 import { IConfiguration } from '../../configuration';
 
+import {
+  TokenCompletionItem,
+  IrregularCompletionItem,
+  EmojiCompletionItem
+} from './tokenCompletionItem';
 import constants from './constants';
 
-export class TokenCompletionItem extends vscode.CompletionItem {
-  constructor(label: string, kind?: vscode.CompletionItemKind) {
-    super(label, kind ?? vscode.CompletionItemKind.Keyword);
+export const SCOPE_RANGE_REGEX = /\(\$?[\w\-\.]*[\(\) ]*/;
+export const EMOJI_RANGE_REGEX = /:[-+_a-z0-9]*(((?<=[-+_a-z0-9]):)? *)/;
+
+export class SummaryCompletionItemManager {
+  public readonly typeItems: TokenCompletionItem[];
+  public get scopeItems(): IrregularCompletionItem[] {
+    return this._makeScopeItems();
   }
-}
+  public readonly emojiItems: EmojiCompletionItem[];
 
-export class IrregularCompletionItem extends TokenCompletionItem {
-  rangeRegex?: RegExp;
-}
-
-export class EmojiCompletionItem extends TokenCompletionItem {
-  filterToken: string;
-  filterDoc?: vscode.MarkdownString;
-  nonFilterDoc?: vscode.MarkdownString;
-
-  constructor(label: string, filterToken: string) {
-    super(label, vscode.CompletionItemKind.Color);
-
-    this.filterToken = filterToken;
-  }
-}
-
-export class TokenCompletionItemManager {
-  public static readonly scopeRangeRegex = /\(\$?[\w\-\.]*[\(\) ]*/;
-  public static readonly emojiRangeRegex = /:[-+_a-z0-9]*(:? *)/;
-
-  public readonly summaryTypeItems: TokenCompletionItem[];
-  public get summaryScopeItems(): IrregularCompletionItem[] {
-    return this._buildSummaryScopeItems();
-  }
-  public readonly summaryEmojiItems: EmojiCompletionItem[];
-  public readonly footerTypeItems: IrregularCompletionItem[];
-
-  private readonly _defaultSummaryScopeItems: IrregularCompletionItem[];
+  private readonly _defaultScopeItems: IrregularCompletionItem[];
 
   private readonly _config: IConfiguration;
 
   constructor(createNewScopeCommandId: string, config: IConfiguration) {
-    this.summaryTypeItems = constants.summaryTypes.map((e) => {
+    this.typeItems = constants.summaryTypes.map((e) => {
       const item = new TokenCompletionItem(e.type);
       item.detail = e.title;
       item.documentation = new vscode.MarkdownString(e.emojis[0] + ' ' + e.description);
@@ -68,7 +50,7 @@ export class TokenCompletionItemManager {
     };
     const emojiIndexPadding = (constants.summaryEmojis.length - 1).toString().length;
 
-    this.summaryEmojiItems = constants.summaryEmojis.map((e, i) => {
+    this.emojiItems = constants.summaryEmojis.map((e, i) => {
       const filter = getEmojiFilter(e.emoji);
 
       const item = new EmojiCompletionItem(e.code, filter.token);
@@ -83,23 +65,13 @@ export class TokenCompletionItemManager {
       return item;
     });
 
-    this.footerTypeItems = constants.footerTypes.map((e) => {
-      const item = new IrregularCompletionItem(e.type);
-      item.detail = e.title;
-      item.documentation = new vscode.MarkdownString(e.emojis[0] + ' ' + e.description);
-      item.sortText = e.sort.toString().padStart(2, '0');
-      item.insertText = e.type + e.separator;
-      item.rangeRegex = new RegExp(e.regex ?? `[\\w\\-]+[${e.separator}]*`);
-      return item;
-    });
-
-    this._defaultSummaryScopeItems = this._createDefaultSummaryScopes(createNewScopeCommandId);
+    this._defaultScopeItems = this._createDefaultScopeItems(createNewScopeCommandId);
 
     this._config = config;
   }
 
-  private _createDefaultSummaryScopes(createNewScopeCommandId: string): IrregularCompletionItem[] {
-    const item = new IrregularCompletionItem('Create New Scope', vscode.CompletionItemKind.Snippet);
+  private _createDefaultScopeItems(createNewScopeCommandId: string): IrregularCompletionItem[] {
+    const item = new IrregularCompletionItem('Create New Scope', vscode.CompletionItemKind.Event);
     item.documentation = new vscode.MarkdownString(
       'New scope created will be saved into `.vscode/settings.json`'
     );
@@ -111,8 +83,8 @@ export class TokenCompletionItemManager {
     return [item];
   }
 
-  private _buildSummaryScopeItems(): IrregularCompletionItem[] {
-    const items = this._defaultSummaryScopeItems.slice(0);
+  private _makeScopeItems(): IrregularCompletionItem[] {
+    const items = this._defaultScopeItems.slice(0);
 
     this._config.userScopes.forEach((e) => {
       const item = new IrregularCompletionItem(e.scope, vscode.CompletionItemKind.Text);
@@ -122,7 +94,7 @@ export class TokenCompletionItemManager {
       item.sortText = (items.length % 1000).toString().padStart(3, '0');
       item.filterText = '(' + e.scope;
       item.insertText = '(' + e.scope + ')';
-      item.rangeRegex = TokenCompletionItemManager.scopeRangeRegex;
+      item.rangeRegex = SCOPE_RANGE_REGEX;
 
       items.push(item);
     });

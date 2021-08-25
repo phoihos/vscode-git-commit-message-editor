@@ -1,51 +1,96 @@
 import * as vscode from 'vscode';
 
+import * as vsceUtil from '@phoihos/vsce-util';
+
 export interface ISummaryScope {
   readonly scope: string;
   readonly description?: string;
 }
 
-export interface IConfiguration {
+export interface IConfiguration extends vsceUtil.IDisposable {
   readonly keepAfterSave: boolean;
   readonly recentCommitsEnabled: boolean;
   readonly recentCommitsMaxItems: number;
   readonly completionEnabled: boolean;
   readonly userScopes: ISummaryScope[];
+  readonly issuesPageSize: number;
 
-  updateUserScopes: (userScopes: ISummaryScope[]) => Thenable<void>;
+  updateUserScopes(userScopes: ISummaryScope[]): Thenable<void>;
 }
 
-class Configuration implements Partial<IConfiguration> {
+class Configuration extends vsceUtil.Disposable implements IConfiguration {
+  private readonly _sectionPrefix = 'gitCommitMessageEditor.';
+
+  private readonly _cache = new Map<string, any>();
+
+  constructor() {
+    super();
+
+    const subscriptions: vscode.Disposable[] = [];
+    subscriptions.push(
+      vscode.workspace.onDidChangeConfiguration(this._onDidChangeConfiguration, this)
+    );
+    this.register(subscriptions);
+  }
+
   get keepAfterSave(): boolean {
-    return this._getConfig('editor').get<boolean>('keepAfterSave', false);
+    return this._getConfigValue<boolean>('editor.keepAfterSave', false);
   }
 
   get recentCommitsEnabled(): boolean {
-    return this._getConfig('codeLens').get<boolean>('recentCommits.enabled', true);
+    return this._getConfigValue<boolean>('codeLens.recentCommits.enabled', true);
   }
 
   get recentCommitsMaxItems(): number {
-    return this._getConfig('codeLens').get<number>('recentCommits.maxItems', 16);
+    return this._getConfigValue<number>('codeLens.recentCommits.maxItems', 16);
   }
 
   get completionEnabled(): boolean {
-    return this._getConfig('intelliSense').get<boolean>('completion.enabled', true);
+    return this._getConfigValue<boolean>('intelliSense.completion.enabled', true);
   }
 
   get userScopes(): ISummaryScope[] {
-    return this._getConfig('intelliSense').get<ISummaryScope[]>('completion.scopes', []);
+    return this._getConfigValue<ISummaryScope[]>('intelliSense.completion.scopes', []);
   }
 
-  updateUserScopes(userScopes: ISummaryScope[]): Thenable<void> {
-    return this._getConfig('intelliSense').update(
-      'completion.scopes',
+  get issuesPageSize(): number {
+    return this._getConfigValue<number>('intelliSense.completion.issues.pageSize', 20);
+  }
+
+  public updateUserScopes(userScopes: ISummaryScope[]): Thenable<void> {
+    return this._getConfig('intelliSense.completion').update(
+      'scopes',
       userScopes,
       vscode.ConfigurationTarget.Workspace
     );
   }
 
-  private _getConfig(feature: string): vscode.WorkspaceConfiguration {
-    return vscode.workspace.getConfiguration('gitCommitMessageEditor.' + feature);
+  private _getConfig(section: string): vscode.WorkspaceConfiguration {
+    return vscode.workspace.getConfiguration(this._sectionPrefix + section);
+  }
+
+  private _getConfigValue<T>(section: string, defaultValue: T): T {
+    const key = this._sectionPrefix + section;
+
+    let value = this._cache.get(key);
+    if (value === undefined) {
+      const sections = section.split('.');
+      const childSection = sections.pop() ?? '';
+      const parentSection = sections.join('.');
+
+      value = this._getConfig(parentSection).get<T>(childSection, defaultValue);
+      this._cache.set(key, value);
+    }
+
+    return value;
+  }
+
+  private _onDidChangeConfiguration(event: vscode.ConfigurationChangeEvent): void {
+    for (const key of this._cache.keys()) {
+      if (event.affectsConfiguration(key)) {
+        this._cache.delete(key);
+      }
+    }
   }
 }
 

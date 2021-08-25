@@ -2,14 +2,14 @@ import * as vscode from 'vscode';
 
 import { ICommand } from '@phoihos/vsce-util';
 
+const _TRAILING_TEXT_REGEX = /^:[: ]*/;
+
 export class FormatSeparatorCommand implements ICommand {
   public readonly id = 'gitCommitMessageEditor.intelliSense.command.formatSeparator';
 
-  private static readonly _trailingTextRegex = /^:[: ]*/;
-
   constructor() {}
 
-  async execute(document: vscode.TextDocument, position: vscode.Position): Promise<void> {
+  public async execute(document: vscode.TextDocument, position: vscode.Position): Promise<void> {
     const editor = vscode.window.activeTextEditor;
     if (editor === undefined) return;
     if (editor.document !== document) return;
@@ -17,7 +17,7 @@ export class FormatSeparatorCommand implements ICommand {
     const line = document.lineAt(position.line);
     const trailingText = line.text.slice(position.character);
 
-    const match = trailingText.match(FormatSeparatorCommand._trailingTextRegex);
+    const match = trailingText.match(_TRAILING_TEXT_REGEX);
     if (match === null) return;
 
     const endPosition = position.translate(0, match[0].length);

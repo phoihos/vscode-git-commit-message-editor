@@ -20,9 +20,9 @@ export interface ITokens {
 }
 
 // see: https://github.com/conventional-commits/parser#the-grammar
-const _summaryTokenRegex = /^(\w+)(\((\$?[\w\-\.]*)(\))?)?(\!)?(: (.*))?$/;
-const _footerTokenRegex = /^(([\w\-]+)|(\w+ ?\w*|\!))((: | #)(.*))?$/;
-const _footerBcTokenRegexes = [/^BREAKING-CHANGE$/i, /^BREAKING (C(H(A(N(GE?)?)?)?)?)?|\!$/i];
+const _SUMMARY_TOKEN_REGEX = /^(\w+)(\((\$?[\w\-\.]*)(\))?)?(\!)?(: (.*))?$/;
+const _FOOTER_TOKEN_REGEX = /^(([\w\-]+)|(\w+ ?\w*|\!))((: | #)(.*))?$/;
+const _FOOTER_BC_REGEXES = [/^BREAKING-CHANGE$/i, /^BREAKING (C(H(A(N(GE?)?)?)?)?)?|\!$/i];
 
 export function parseSummary(summary: string): ITokens {
   const tokens = {
@@ -37,7 +37,7 @@ export function parseSummary(summary: string): ITokens {
     return tokens;
   }
 
-  const match = summary.match(_summaryTokenRegex);
+  const match = summary.match(_SUMMARY_TOKEN_REGEX);
   if (match === null) {
     tokens.tokenTypeAt = ETokenType.Error;
     return tokens;
@@ -78,7 +78,7 @@ export function parseFooter(footer: string): ITokens {
 
   let isBreaking = false;
 
-  const match = footer.match(_footerTokenRegex);
+  const match = footer.match(_FOOTER_TOKEN_REGEX);
   if (match === null) {
     tokens.tokenTypeAt = ETokenType.Error;
     return tokens;
@@ -86,7 +86,7 @@ export function parseFooter(footer: string): ITokens {
     const separator = match[5] ?? ': '; // (: | #)
     // ([\w\-]+)
     if (match[2] !== undefined) {
-      isBreaking = _footerBcTokenRegexes[0].test(match[2]);
+      isBreaking = _FOOTER_BC_REGEXES[0].test(match[2]);
 
       if (isBreaking && separator !== ': ') {
         tokens.tokenTypeAt = ETokenType.Error;
@@ -95,7 +95,7 @@ export function parseFooter(footer: string): ITokens {
     }
     // (\w+ ?\w*|\!)
     else if (match[3] !== undefined) {
-      isBreaking = _footerBcTokenRegexes[1].test(match[3]);
+      isBreaking = _FOOTER_BC_REGEXES[1].test(match[3]);
 
       if (isBreaking === false || separator !== ': ') {
         tokens.tokenTypeAt = ETokenType.Error;

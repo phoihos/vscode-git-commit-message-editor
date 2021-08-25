@@ -1,8 +1,8 @@
 import * as vscode from 'vscode';
 
-import { ICommand } from '@phoihos/vsce-util';
-
 import { ISummaryScope, IConfiguration } from '../../configuration';
+
+import { ICommand } from '@phoihos/vsce-util';
 
 export class CreateNewScopeCommand implements ICommand {
   public readonly id = 'gitCommitMessageEditor.intelliSense.command.createNewScope';
@@ -15,7 +15,7 @@ export class CreateNewScopeCommand implements ICommand {
     this._config = config;
   }
 
-  async execute(): Promise<void> {
+  public async execute(): Promise<void> {
     const editor = vscode.window.activeTextEditor;
     if (editor === undefined) return;
 
@@ -47,7 +47,7 @@ export class CreateNewScopeCommand implements ICommand {
 
     return {
       placeHolder: 'Input new scope value',
-      validateInput: (value) => {
+      validateInput: (value): string => {
         if (value.length === 0) return 'Not allow empty value';
 
         const lowerScope = value.trim().toLowerCase();
@@ -57,7 +57,7 @@ export class CreateNewScopeCommand implements ICommand {
         if (lowerScopes.includes(lowerScope)) return 'Already exists';
 
         return /^\$?[\w\-\.]+$/.test(lowerScope)
-          ? undefined
+          ? ''
           : 'Allow only words, underscores, hyphens and dots (can optionally begin with $)';
       }
     };
@@ -67,13 +67,13 @@ export class CreateNewScopeCommand implements ICommand {
     return {
       placeHolder: '(optional) Input the description for',
       prompt: `scope: "${scope}"`,
-      validateInput: (value) => {
-        if (value.length === 0) return undefined;
+      validateInput: (value): string => {
+        if (value.length === 0) return '';
 
         const desc = value.trim();
         if (desc.length === 0) return 'Not allow only whitespaces';
 
-        return undefined;
+        return '';
       }
     };
   }
