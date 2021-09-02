@@ -9,12 +9,15 @@ Edit commit messages via VS Code's editor, and Autocomplete for Conventional Com
 - Supports to edit commit messages via VS Code's editor
     - See [details](#editor) below
 - Supports IntelliSense feature to edit commit messages that conform to [Conventional Commits Specification](https://conventionalcommits.org/)
+    - Supported completion
+      - [Commit Types completion](#commit-types-completion)
+      - [Scopes completion](#scopes-completion)
+          - Includes Workspace level scopes management
+      - [Gitmojis completion](#gitmojis-completion)
+      - [Issues completion](#issues-completion) for the Footer Type `Closes`
+      - [Commits completion](#commits-completion) for the Footer Type `Refs`
     - See [details](#intellisense) below
-- Supports Workspace level scopes management
-    - See [details](#scope-completion) below
-- Supports [Gitmoji](https://gitmoji.dev/)
-    - See [details](#gitmoji-completion) below
-- Selecting the previous commit message by `Recent commits...` CodeLens feature
+- Selecting the previous commit message by `Recent commits...` CodeLens link
     - See [details](#codelens) below
 
 ## Installation
@@ -38,18 +41,20 @@ Type commit messages with **IntelliSense** feature, and then save it. The **Sour
 
 ![Demo Editor 3](./images/readme/demo_editor_3.gif)
 
-> **Tip:** If you don't want to close the commit message editor window after saving, change `gitCommitMessageEditor.editor.keepAfterSave` option to `true`. (**Note:** Auto-focusing to the **Source Control** view only work with the option is `false`.)
+If you don't want to close the commit message editor window after saving, change `gitCommitMessageEditor.editor.keepAfterSave` option to `true`. Note that auto-focusing to the **Source Control** view only work with the option is `false`.
+
+> **Note:** The commit message editor **does not actually create** a `workspace/.git/COMMIT_EDITMSG` file. The file IO operations is handled by the VFS (Virtual File System).
 
 ### IntelliSense
 
-You can trigger **IntelliSense** in the commit message editor window by typing <kbd>Ctrl</kbd>+<kbd>Space</kbd> or by typing the letters.
+You can trigger **IntelliSense** in the commit message editor window by typing <kbd>Ctrl</kbd>+<kbd>Space</kbd>, or by typing the letters.
 > Also supported in the [VS Code as Git editor](https://code.visualstudio.com/docs/editor/versioncontrol#_vs-code-as-git-editor) mode.
 
 ![Demo IntelliSense Summary 1](./images/readme/demo_intellisense_summary_1.gif)
 
 All completions conform to [**Conventional Commits Specification**](https://conventionalcommits.org/).
 
-#### Commit Type completion
+#### Commit Types completion
 
 List of available conventional commit types:
 > Commit types originally from [commitizen/cz-conventional-changelog](https://github.com/commitizen/cz-conventional-changelog)
@@ -70,26 +75,25 @@ List of available conventional commit types:
 | wip      | Work In Progress         | A commit that will be squashed later                                                                        |
 | initial  | Initial                  | Initial commit                                                                                              |
 
-#### Scope completion
+#### Scopes completion
 
-You can type the scope as wish, select one that saved, or create new scope by selecting **Create New Scope** in the suggestion list.
+You can type a scope manually, select one that saved, or create a new scope by selecting the `Create New Scope` item in the suggestion list.
 
 ![Demo IntelliSense Summary 2](./images/readme/demo_intellisense_summary_2.gif)
 
-> **Note:** The scope allow only words, underscores, hyphens and dots (can optionally begin with $).
+The scope allows only words, underscores, hyphens and dots (can optionally begin with $) and will be saved into `workspace/.vscode/settings.json`.
 
-The scope user created will be saved into `workspace/.vscode/settings.json`.
+#### Gitmojis completion
 
-#### Gitmoji completion
+> Check out available emojis on [Gitmoji](https://gitmoji.dev/)
 
 You can trigger the gitmoji suggestions by typing a trigger character `:` (colon).
 
 ![Demo IntelliSense Summary 3](./images/readme/demo_intellisense_summary_3.gif)
 
-The gitmoji completion only work in the subject section of the summary and offers the gitmoji suggestions by `Commit Type` that you typed.
-> **Tip:** If you want to show all gitmoji suggestions, cancel (pressing <kbd>Esc</kbd>) the suggestions widget and re-trigger by typing <kbd>Ctrl</kbd>+<kbd>Space</kbd> follow the `:` (colon).
+The gitmojis completion only works in the subject section of the summary and offers the gitmoji suggestions by `Commit Type` that you typed. If you want to show all gitmoji suggestions, cancel (pressing <kbd>Esc</kbd>) the suggestions widget and re-trigger by typing <kbd>Ctrl</kbd>+<kbd>Space</kbd> follow the `:` (colon).
 
-#### Footer Type completion
+#### Footer Types completion
 
 Also supports the footer type completion.
 
@@ -102,6 +106,24 @@ List of available conventional footer types:
 | Closes          | Referencing issues  | A code change that related issues to close (for example, Closes #​133)         |
 | Refs            | Referencing commits | A code change that related other commits (for example, Refs: 676104e, a215868) |
 | BREAKING CHANGE | Breaking changes    | A code change that causes other features to fail                               |
+
+#### Issues completion
+
+You can trigger the issue suggestions by selecting the `Closes` item in the footer type suggestion list, or by typing a trigger character `#` (number sign) on the `Closes` footer line.
+
+![Demo IntelliSense Footer 2](./images/readme/demo_intellisense_footer_2.gif)
+
+The issue suggestions are provided from your remote git hosting service. The issue items suggested are cached, and the caches will be cleared when the editor closed.
+
+Currently, you can use the git hosting service GitHub only. GitHub API allows for up to 60 requests (for fetching issues) per hour. If you'd like to get a higher GitHub API rate limit, you can authenticate with the GitHub authentication (built-in) extension. See [GitHub API Rate limiting](https://docs.github.com/en/rest/overview/resources-in-the-rest-api#rate-limiting) for more information.
+
+#### Commits completion
+
+You can trigger the commit suggestions by selecting the `Refs` item in the footer type suggestion list, or by typing <kbd>Ctrl</kbd>+<kbd>Space</kbd> on the `Refs` footer line.
+
+![Demo IntelliSense Footer 3](./images/readme/demo_intellisense_footer_3.gif)
+
+The commit suggestions are provided from your local repository.
 
 ### CodeLens
 
@@ -116,13 +138,14 @@ The CodeLens link will be appeared only when no commit message typed.
 
 Table of contributed settings (prefix "gitCommitMessageEditor."):
 
-| Name                            | Default | Description                                                                            |
-| ------------------------------- | ------- | -------------------------------------------------------------------------------------- |
-| editor.keepAfterSave            | `false` | Controls whether the commit message editor tab keep or close, after saving             |
-| codeLens.recentCommits.enabled  | `true`  | Controls whether the `Recent commits...` code lens feature is enabled or not           |
-| codeLens.recentCommits.maxItems | `16`    | Specifies the maximum number of commits to show in the quick pick UI                   |
-| intelliSense.completion.enabled | `true`  | Controls whether the \"Quick suggestions\" feature is enabled or not                   |
-| intelliSense.completion.scopes  | `[]`    | Scopes that user created (Scopes will be saved into `workspace/.vscode/settings.json`) |
+| Name                                    | Default | Description                                                                            |
+| --------------------------------------- | ------- | -------------------------------------------------------------------------------------- |
+| editor.keepAfterSave                    | `false` | Controls whether the commit message editor tab keep or close, after saving             |
+| codeLens.recentCommits.enabled          | `true`  | Controls whether the `Recent commits...` code lens feature is enabled or not           |
+| codeLens.recentCommits.maxItems         | `16`    | Specifies the maximum number of commits to show in the quick pick UI                   |
+| intelliSense.completion.enabled         | `true`  | Controls whether the \"Quick suggestions\" feature is enabled or not                   |
+| intelliSense.completion.scopes          | `[]`    | Scopes that user created (Scopes will be saved into `workspace/.vscode/settings.json`) |
+| intelliSense.completion.issues.pageSize | `20`    | Specifies the maximum number of issues per page to show in the suggestions widget      |
 
 And recommends adding a setting below into your Global or Workspace `settings.json`, if you want to follow the **Git 50/72 rule**.
 
