@@ -9,13 +9,14 @@ Edit commit messages via VS Code's editor, and Autocomplete for Conventional Com
 - Supports to edit commit messages via VS Code's editor
     - See [details](#editor) below
 - Supports IntelliSense feature to edit commit messages that conform to [Conventional Commits Specification](https://conventionalcommits.org/)
-    - Supported completion
-      - [Commit Types completion](#commit-types-completion)
-      - [Scopes completion](#scopes-completion)
-          - Includes Workspace level scopes management
-      - [Gitmojis completion](#gitmojis-completion)
-      - [Issues completion](#issues-completion) for the Footer Type `Closes`
-      - [Commits completion](#commits-completion) for the Footer Type `Refs`
+    - Supported completions
+        - [Commit Types completion](#commit-types-completion)
+        - [Scopes completion](#scopes-completion)
+            - Includes Workspace level scopes management
+        - [Gitmojis completion](#gitmojis-completion)
+        - [Footer Types completion](#footer-types-completion)
+        - [Issues completion](#issues-completion) for the Footer Type `Closes`
+        - [Commits completion](#commits-completion) for the Footer Type `Refs`
     - See [details](#intellisense) below
 - Selecting the previous commit message by `Recent commits...` CodeLens link
     - See [details](#codelens) below
@@ -115,7 +116,7 @@ You can trigger the issue suggestions by selecting the `Closes` item in the foot
 
 The issue suggestions are provided from your remote git hosting service. The issue items suggested are cached, and the caches will be cleared when the editor closed.
 
-Currently, you can use the git hosting service GitHub only. GitHub API allows for up to 60 requests (for fetching issues) per hour. If you'd like to get a higher GitHub API rate limit, you can authenticate with the GitHub authentication (built-in) extension. See [GitHub API Rate limiting](https://docs.github.com/en/rest/overview/resources-in-the-rest-api#rate-limiting) for more information.
+Currently, you can use the git hosting service GitHub only. Note that GitHub API allows for up to 60 requests (for fetching issues) per hour. If you'd like to get a higher GitHub API rate limit, you can authenticate with the GitHub authentication (built-in) extension. See [GitHub API Rate limiting](https://docs.github.com/en/rest/overview/resources-in-the-rest-api#rate-limiting) for more information.
 
 #### Commits completion
 
