@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 0.4.1 (2021-09-03)
+
+### Bug Fixes
+
+* Error handling for GitHub private repository
+
+### Others
+
+* Update README
+
 ## 0.4.0 (2021-09-03)
 
 ### Features
