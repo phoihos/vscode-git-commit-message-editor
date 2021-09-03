@@ -78,15 +78,16 @@ class GitHubDataProvider extends vsceUtil.Disposable implements IGitDataProvider
         })
         .catch((err): GitHubIssueModel[] => {
           if (err instanceof GitHubRequestError) {
-            if (err.status === 401) {
-              vscode.window.showErrorMessage(
-                'Needs to authenticate with GitHub to access the repository.'
-              );
-              return [];
-            } else if (err.status === 403 && /rate limit exceeded/.test(err.message)) {
+            if (err.status === 403 && /rate limit exceeded/.test(err.message)) {
               vscode.window.showErrorMessage(
                 'GitHub API rate limit exceeded, please wait and try again.' +
                   ' Or authenticate to GitHub to get a higher rate limit.'
+              );
+              return [];
+            } else if (err.status === 404) {
+              vscode.window.showErrorMessage(
+                'You need to authenticate with GitHub for accessing' +
+                  ` 'https://github.com/${remote.owner}/${remote.repo}' repository.`
               );
               return [];
             }
