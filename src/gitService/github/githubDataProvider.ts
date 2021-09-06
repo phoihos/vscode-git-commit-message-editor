@@ -18,15 +18,15 @@ const _SCOPES = ['read:user', 'user:email', 'repo'];
 class GitHubDataProvider extends vsceUtil.Disposable implements IGitDataProvider {
   public readonly host = 'github.com';
 
-  private _githubAPI: GitHubAPI | undefined;
   private readonly _fallbackProvider: IGitDataProvider;
 
+  private _authedAPI: GitHubAPI | undefined = undefined;
+  private readonly _fallbackAPI = new GitHubAPI();
   private readonly _cache = new Map<string, Promise<any[]>>();
 
   constructor(fallbackProvider: IGitDataProvider) {
     super();
 
-    this._githubAPI = undefined;
     this._fallbackProvider = fallbackProvider;
 
     const subscriptions: vscode.Disposable[] = [];
@@ -35,7 +35,7 @@ class GitHubDataProvider extends vsceUtil.Disposable implements IGitDataProvider
   }
 
   public async getAPI(): Promise<GitHubAPI> {
-    return this._githubAPI ?? (await this._ensureAPI());
+    return (await this._ensureAPI()) ?? this._fallbackAPI;
   }
 
   public getCommits(query: IGitCommitQuery): Promise<IGitCommit[]> {
@@ -128,34 +128,40 @@ class GitHubDataProvider extends vsceUtil.Disposable implements IGitDataProvider
     return value;
   }
 
-  private async _ensureAPI(): Promise<GitHubAPI> {
-    let githubAPI: GitHubAPI | undefined = undefined;
+  private async _ensureAPI(invalidate: boolean = false): Promise<GitHubAPI | undefined> {
+    let accessToken: string | undefined = undefined;
 
     try {
       const session = await vscode.authentication.getSession(_GITHUB_AUTH_PROVIDER_ID, _SCOPES, {
         createIfNone: false
       });
-
-      if (session !== undefined) {
-        githubAPI = new GitHubAPI({ auth: session.accessToken });
-      } else {
-        console.warn('No session');
-      }
+      accessToken = session?.accessToken;
     } catch (err) {
       console.warn('Failed to authenticate');
       console.warn(err);
     }
 
-    this._githubAPI = githubAPI ?? new GitHubAPI();
+    const cachedAPI = this._authedAPI;
 
-    return this._githubAPI;
+    if (accessToken !== undefined) {
+      const reusableAPI = invalidate ? undefined : this._authedAPI;
+      this._authedAPI = reusableAPI ?? new GitHubAPI({ auth: accessToken });
+    } else {
+      this._authedAPI = undefined;
+    }
+
+    if (this._authedAPI !== cachedAPI) {
+      this._cache.clear();
+    }
+
+    return this._authedAPI;
   }
 
   private async _onDidChangeSessions(
     event: vscode.AuthenticationSessionsChangeEvent
   ): Promise<void> {
     if (event.provider.id === _GITHUB_AUTH_PROVIDER_ID) {
-      await this._ensureAPI();
+      await this._ensureAPI(true);
     }
   }
 }
