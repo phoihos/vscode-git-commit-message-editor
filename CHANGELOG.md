@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 0.4.2 (2021-09-06)
+
+### Bug Fixes
+
+* Correct minor typos of infomation messages
+* The consent of GitHub authentication does not apply immediately
+
 ### 0.4.1 (2021-09-03)
 
 ### Bug Fixes
