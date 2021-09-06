@@ -86,7 +86,7 @@ class GitHubDataProvider extends vsceUtil.Disposable implements IGitDataProvider
               return [];
             } else if (err.status === 404) {
               vscode.window.showErrorMessage(
-                'You need to authenticate with GitHub for accessing' +
+                'You need to authenticate to GitHub for accessing' +
                   ` 'https://github.com/${remote.owner}/${remote.repo}' repository.`
               );
               return [];
