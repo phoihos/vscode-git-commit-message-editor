@@ -3,6 +3,7 @@ import * as vscode from 'vscode';
 import { IGitService } from '../../gitService';
 import { IGitIssue } from '../../gitService/interface';
 import { IConfiguration } from '../../configuration';
+import { makeCommitDescription, makeCommitMarkdown } from '../helper/commitHelper';
 
 import { TokenCompletionItem, IrregularCompletionItem } from './tokenCompletionItem';
 import constants from './constants';
@@ -52,30 +53,18 @@ export class FooterCompletionItemManager {
     this._config = config;
   }
 
-  public isIssueTriggerable(type: string): boolean {
-    const item = this.typeItems.find((e) => e.label === type);
-
-    return item?.command?.title === 'issue';
-  }
-
-  public isCommitTriggerable(type: string): boolean {
-    const item = this.typeItems.find((e) => e.label === type);
-
-    return item?.command?.title === 'commit';
-  }
-
   public getIssueItems(uri: vscode.Uri): Thenable<TokenCompletionItem[]> {
     const key = uri.path;
 
-    const per_page = this._config.issuesPageSize;
+    const pageSize = this._config.issuesPageSize;
     const page = this._issuePaginationMap.get(key) ?? 1;
     this._issuePaginationMap.delete(key);
 
-    return this._git.getIssues(uri, { per_page, page }).then((issues) => {
+    return this._git.getIssues(uri, { pageSize, page }).then((issues): TokenCompletionItem[] => {
       const orderPadding = (issues.length - 1).toString().length;
 
       const items = issues
-        .slice(0, per_page)
+        .slice(0, pageSize)
         .filter((e) => e.isPR === false)
         .map((e, i) => {
           const labels = e.labels.map((e) => e.name).join(' ');
@@ -91,7 +80,7 @@ export class FooterCompletionItemManager {
       if (items.length === 0) {
         items.push(this._noIssuesItem);
       } else {
-        if (issues.length > per_page) {
+        if (issues.length > pageSize) {
           const issue = issues[0];
           const ownerRepo = `${issue.remote.owner}/${issue.remote.repo}`;
 
@@ -123,17 +112,13 @@ export class FooterCompletionItemManager {
   }
 
   public getCommitItems(uri: vscode.Uri): Thenable<TokenCompletionItem[]> {
-    return this._git.getCommits(uri).then((commits) => {
+    return this._git.getCommits(uri).then((commits): TokenCompletionItem[] => {
       const orderPadding = (commits.length - 1).toString().length;
 
       const items = commits.map((e, i) => {
-        const detail = [e.authorName, e.commitTimeAgo]
-          .filter((ee) => ee !== undefined && ee.length > 0)
-          .join(', ');
-
-        const item = new vscode.CompletionItem(e.hashShort, vscode.CompletionItemKind.Constant);
-        item.detail = detail;
-        item.documentation = new vscode.MarkdownString(e.message);
+        const item = new TokenCompletionItem(e.hashShort, vscode.CompletionItemKind.Constant);
+        item.detail = makeCommitDescription(e);
+        item.documentation = makeCommitMarkdown(e);
         item.sortText = i.toString().padStart(orderPadding, '0');
         return item;
       });

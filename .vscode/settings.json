@@ -36,10 +36,6 @@
     {
       "scope": "Parser",
       "description": "About the **Parser** feature"
-    },
-    {
-      "scope": "Markdown",
-      "description": "About the **Markdown** feature"
     }
   ]
 }

@@ -52,19 +52,30 @@ export interface IGitDataQuery {
   readonly repository: IGitRepository;
 }
 
-export interface IGitCommitQuery extends IGitDataQuery {
+export interface IGitCommitListQuery extends IGitDataQuery {
   readonly maxEntries?: number;
+}
+
+export interface IGitCommitQuery extends IGitDataQuery {
+  readonly hash: string;
+}
+
+export interface IGitIssueListQuery extends IGitDataQuery {
+  readonly remote: IGitRemote | undefined;
+  readonly pagination?: { pageSize: number; page: number };
 }
 
 export interface IGitIssueQuery extends IGitDataQuery {
   readonly remote: IGitRemote | undefined;
-  readonly pagination?: { per_page: number; page: number };
+  readonly number: number;
 }
 
 export interface IGitDataProvider extends vsceUtil.IDisposable {
   readonly host: string;
 
-  getCommits(query: IGitCommitQuery): Promise<IGitCommit[]>;
-  getIssues(query: IGitIssueQuery): Promise<IGitIssue[]>;
+  getCommits(query: IGitCommitListQuery): Promise<IGitCommit[]>;
+  getCommit(query: IGitCommitQuery): Promise<IGitCommit | undefined>;
+  getIssues(query: IGitIssueListQuery): Promise<IGitIssue[]>;
+  getIssue(query: IGitIssueQuery): Promise<IGitIssue | undefined>;
   clearCache(query: IGitDataQuery): void;
 }

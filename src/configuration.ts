@@ -14,6 +14,7 @@ export interface IConfiguration extends vsceUtil.IDisposable {
   readonly completionEnabled: boolean;
   readonly userScopes: ISummaryScope[];
   readonly issuesPageSize: number;
+  readonly hoverEnabled: boolean;
 
   updateUserScopes(userScopes: ISummaryScope[]): Thenable<void>;
 }
@@ -55,6 +56,10 @@ class Configuration extends vsceUtil.Disposable implements IConfiguration {
 
   get issuesPageSize(): number {
     return this._getConfigValue<number>('intelliSense.completion.issues.pageSize', 20);
+  }
+
+  get hoverEnabled(): boolean {
+    return this._getConfigValue<boolean>('intelliSense.hover.enabled', true);
   }
 
   public updateUserScopes(userScopes: ISummaryScope[]): Thenable<void> {

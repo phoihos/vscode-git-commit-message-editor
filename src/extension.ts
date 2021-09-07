@@ -24,7 +24,7 @@ function registerProviders(git: IGitService, config: IConfiguration): vscode.Dis
 
   aggregateProviders.add(new features.CommitEditmsgFileSystemProvider(git, config));
   aggregateProviders.add(new features.GitCommitCodeLensProvider(git, config));
-  aggregateProviders.add(new features.GitCommitCompletionItemProvider(git, config));
+  aggregateProviders.add(new features.GitCommitIntelliSenseProvider(git, config));
 
   return aggregateProviders;
 }

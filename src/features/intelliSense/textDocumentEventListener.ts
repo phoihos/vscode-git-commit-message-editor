@@ -3,9 +3,9 @@ import * as vscode from 'vscode';
 import { IGitService } from '../../gitService';
 
 import { EventListenerBase } from '@phoihos/vsce-util';
-import { FooterCompletionItemManager } from './footerCompletionItemManager';
 import { TextDocumentParserProxy, ELineType, ETokenType } from './textDocumentParserProxy';
 import { parseSummary, parseFooter } from './textDocumentParserProxy';
+import constants from './constants';
 
 type EventCallback = (document: vscode.TextDocument, position: vscode.Position) => void;
 
@@ -13,7 +13,6 @@ export class TextDocumentEventListener extends EventListenerBase {
   private readonly _selector: string;
   private readonly _formatSeparatorCommandId: string;
   private readonly _triggerSuggestCommandId: string;
-  private readonly _footerCompletionItemManager: FooterCompletionItemManager;
   private readonly _parserProxy: TextDocumentParserProxy;
 
   private readonly _eventCallbackMap = new Map<string, EventCallback>();
@@ -24,7 +23,6 @@ export class TextDocumentEventListener extends EventListenerBase {
     selector: string,
     formatSeparatorCommandId: string,
     triggerSuggestCommandId: string,
-    footerCompletionItemManager: FooterCompletionItemManager,
     parserProxy: TextDocumentParserProxy,
     git: IGitService
   ) {
@@ -33,7 +31,6 @@ export class TextDocumentEventListener extends EventListenerBase {
     this._selector = selector;
     this._formatSeparatorCommandId = formatSeparatorCommandId;
     this._triggerSuggestCommandId = triggerSuggestCommandId;
-    this._footerCompletionItemManager = footerCompletionItemManager;
     this._parserProxy = parserProxy;
 
     this._git = git;
@@ -93,7 +90,7 @@ export class TextDocumentEventListener extends EventListenerBase {
       const tokens = parseFooter(leadingText);
 
       if (tokens.tokenTypeAt === ETokenType.Desc) {
-        if (this._footerCompletionItemManager.isIssueTriggerable(tokens.type)) {
+        if (constants.isIssueTriggerable(tokens.type)) {
           vscode.commands.executeCommand(this._triggerSuggestCommandId);
         }
       }

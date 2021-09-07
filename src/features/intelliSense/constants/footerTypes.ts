@@ -35,3 +35,15 @@ export const footerTypes: IFooterType[] = [
     regex: '\\w+ ?\\w*[: ]*'
   }
 ];
+
+export function isIssueTriggerable(type: string): boolean {
+  const found = footerTypes.find((e) => e.type === type);
+
+  return found?.descType === 'issue';
+}
+
+export function isCommitTriggerable(type: string): boolean {
+  const found = footerTypes.find((e) => e.type === type);
+
+  return found?.descType === 'commit';
+}

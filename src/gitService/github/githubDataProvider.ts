@@ -3,12 +3,20 @@ import { Octokit as GitHubAPI, RestEndpointMethodTypes } from '@octokit/rest';
 import { RequestError as GitHubRequestError } from '@octokit/request-error';
 
 import { IGitRepository, IGitCommit, IGitIssue } from '../interface';
-import { IGitDataProvider, IGitDataQuery, IGitCommitQuery, IGitIssueQuery } from '../interface';
+import {
+  IGitDataProvider,
+  IGitDataQuery,
+  IGitCommitListQuery,
+  IGitCommitQuery,
+  IGitIssueListQuery,
+  IGitIssueQuery
+} from '../interface';
 
 import * as vsceUtil from '@phoihos/vsce-util';
 import { GitHubIssueModel, translateIssues } from './githubIssue';
 
-type GitHubIssuesParams = RestEndpointMethodTypes['issues']['listForRepo']['parameters'];
+type GitHubIssueListParams = RestEndpointMethodTypes['issues']['listForRepo']['parameters'];
+type GitHubIssueParams = RestEndpointMethodTypes['issues']['get']['parameters'];
 
 const _GITHUB_AUTH_PROVIDER_ID = 'github';
 // The GitHub Authentication Provider accepts the scopes described here:
@@ -38,18 +46,22 @@ class GitHubDataProvider extends vsceUtil.Disposable implements IGitDataProvider
     return (await this._ensureAPI()) ?? this._fallbackAPI;
   }
 
-  public getCommits(query: IGitCommitQuery): Promise<IGitCommit[]> {
+  public getCommits(query: IGitCommitListQuery): Promise<IGitCommit[]> {
     return this._fallbackProvider.getCommits(query);
   }
 
-  public async getIssues(query: IGitIssueQuery): Promise<IGitIssue[]> {
+  public getCommit(query: IGitCommitQuery): Promise<IGitCommit | undefined> {
+    return this._fallbackProvider.getCommit(query);
+  }
+
+  public async getIssues(query: IGitIssueListQuery): Promise<IGitIssue[]> {
     const remote = query.remote;
     if (remote === undefined) {
       return this._fallbackProvider.getIssues(query);
     }
 
     const repository = query.repository;
-    const pagination = query.pagination ?? { per_page: 20, page: 1 };
+    const pagination = query.pagination ?? { pageSize: 20, page: 1 };
     const queryString = `issues?page=${pagination.page}`;
 
     const githubAPI = await this.getAPI();
@@ -57,16 +69,17 @@ class GitHubDataProvider extends vsceUtil.Disposable implements IGitDataProvider
     return this._getOrFetch<IGitIssue>(repository, queryString, () => {
       // see: https://octokit.github.io/rest.js/v18#issues-list-for-repo
       // see: https://docs.github.com/en/rest/reference/issues#list-repository-issues
-      const params: GitHubIssuesParams = {
+      const params: GitHubIssueListParams = {
         owner: remote.owner,
         repo: remote.repo,
         state: 'open',
-        ...pagination
+        per_page: pagination.pageSize,
+        page: pagination.page
       };
-      const oneMoreParams: GitHubIssuesParams = {
+      const oneMoreParams: GitHubIssueListParams = {
         ...params,
         per_page: 1,
-        page: pagination.per_page * pagination.page + 1
+        page: pagination.pageSize * pagination.page + 1
       };
 
       return Promise.all([
@@ -98,6 +111,66 @@ class GitHubDataProvider extends vsceUtil.Disposable implements IGitDataProvider
           return translateIssues(repository, remote, issues);
         });
     });
+  }
+
+  public async getIssue(query: IGitIssueQuery): Promise<IGitIssue | undefined> {
+    const remote = query.remote;
+    if (remote === undefined) {
+      return this._fallbackProvider.getIssue(query);
+    }
+
+    const repository = query.repository;
+    const issueNumber = query.number;
+
+    const key = repository.rootUri.path + '/issues';
+
+    for (const superKey of this._cache.keys()) {
+      if (superKey.includes(key)) {
+        let value = this._cache.get(superKey);
+        if (value !== undefined) {
+          const issues: IGitIssue[] = await value;
+          const issue = issues.find((e) => e.number === issueNumber);
+          if (issue !== undefined) return issue;
+        }
+      }
+    }
+
+    const githubAPI = await this.getAPI();
+
+    // see: https://octokit.github.io/rest.js/v18#issues-get
+    // see: https://docs.github.com/en/rest/reference/issues#get-an-issue
+    const params: GitHubIssueParams = {
+      owner: remote.owner,
+      repo: remote.repo,
+      issue_number: issueNumber
+    };
+
+    return githubAPI.rest.issues
+      .get(params)
+      .then((response): GitHubIssueModel | undefined => {
+        const issue = response.data as GitHubIssueModel;
+        if (issue.state !== 'open' || issue.pull_request !== undefined) {
+          return undefined;
+        }
+        return issue;
+      })
+      .catch((err): undefined => {
+        if (err instanceof GitHubRequestError) {
+          if (err.status === 403 && /rate limit exceeded/.test(err.message)) {
+            vscode.window.showErrorMessage(
+              'GitHub API rate limit exceeded, please wait and try again.' +
+                ' Or authenticate to GitHub to get a higher rate limit.'
+            );
+            return undefined;
+          } else if (err.status === 301 || err.status === 404 || err.status === 410) {
+            return undefined;
+          }
+        }
+        throw err;
+      })
+      .then((issue): IGitIssue | undefined => {
+        return issue !== undefined ? translateIssues(repository, remote, [issue])[0] : undefined;
+      });
   }
 
   public clearCache(query: IGitDataQuery): void {

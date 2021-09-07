@@ -11,7 +11,9 @@ export interface IGitService extends vsceUtil.IDisposable {
 
   getRepository(uri: vscode.Uri): IGitRepository | undefined;
   getCommits(uri: vscode.Uri, maxEntries?: number): Promise<IGitCommit[]>;
-  getIssues(uri: vscode.Uri, pagination?: { per_page: number; page: number }): Promise<IGitIssue[]>;
+  getCommit(uri: vscode.Uri, hash: string): Promise<IGitCommit | undefined>;
+  getIssues(uri: vscode.Uri, pagination?: { pageSize: number; page: number }): Promise<IGitIssue[]>;
+  getIssue(uri: vscode.Uri, number: number): Promise<IGitIssue | undefined>;
   clearCache(uri: vscode.Uri): void;
 }
 
@@ -55,9 +57,18 @@ class GitService extends vsceUtil.Disposable implements IGitService {
     return dataProvider.getCommits({ repository, maxEntries });
   }
 
+  public getCommit(uri: vscode.Uri, hash: string): Promise<IGitCommit | undefined> {
+    const repository = this.getRepository(uri);
+    if (repository === undefined) return Promise.resolve(undefined);
+
+    const [dataProvider] = this._dataProviderProvider.getDataProvider(repository, uri.path);
+
+    return dataProvider.getCommit({ repository, hash });
+  }
+
   public getIssues(
     uri: vscode.Uri,
-    pagination?: { per_page: number; page: number }
+    pagination?: { pageSize: number; page: number }
   ): Promise<IGitIssue[]> {
     const repository = this.getRepository(uri);
     if (repository === undefined) return Promise.resolve([]);
@@ -65,6 +76,15 @@ class GitService extends vsceUtil.Disposable implements IGitService {
     const [dataProvider, remote] = this._dataProviderProvider.getDataProvider(repository, uri.path);
 
     return dataProvider.getIssues({ repository, remote, pagination });
+  }
+
+  public getIssue(uri: vscode.Uri, number: number): Promise<IGitIssue | undefined> {
+    const repository = this.getRepository(uri);
+    if (repository === undefined) return Promise.resolve(undefined);
+
+    const [dataProvider, remote] = this._dataProviderProvider.getDataProvider(repository, uri.path);
+
+    return dataProvider.getIssue({ repository, remote, number });
   }
 
   public clearCache(uri: vscode.Uri): void {

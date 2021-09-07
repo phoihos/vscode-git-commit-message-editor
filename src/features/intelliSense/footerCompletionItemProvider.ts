@@ -1,12 +1,13 @@
 import * as vscode from 'vscode';
 
 import { IConfiguration } from '../../configuration';
-import { issueToMarkdown } from '../markdown/issueToMarkdown';
+import { makeIssueMarkdown } from '../helper/issueHelper';
 
 import * as vsceUtil from '@phoihos/vsce-util';
 import { FooterCompletionItemManager, IssueCompletionItem } from './footerCompletionItemManager';
 import { TextDocumentParserProxy, ELineType, ETokenType } from './textDocumentParserProxy';
 import { parseFooter } from './textDocumentParserProxy';
+import constants from './constants';
 
 export class FooterCompletionItemProvider
   extends vsceUtil.Disposable
@@ -56,12 +57,12 @@ export class FooterCompletionItemProvider
           return e;
         });
       } else if (tokens.tokenTypeAt === ETokenType.Desc) {
-        if (this._itemManager.isIssueTriggerable(tokens.type)) {
+        if (constants.isIssueTriggerable(tokens.type)) {
           const leadingChar = line.text.charAt(position.character - 1);
           if (leadingChar === '#') {
             return this._itemManager.getIssueItems(document.uri);
           }
-        } else if (this._itemManager.isCommitTriggerable(tokens.type)) {
+        } else if (constants.isCommitTriggerable(tokens.type)) {
           return this._itemManager.getCommitItems(document.uri);
         }
       }
@@ -75,7 +76,7 @@ export class FooterCompletionItemProvider
     _token: vscode.CancellationToken
   ): vscode.ProviderResult<vscode.CompletionItem> {
     if (item instanceof IssueCompletionItem) {
-      item.documentation = issueToMarkdown(item.issue);
+      item.documentation = makeIssueMarkdown(item.issue);
     }
     return item;
   }

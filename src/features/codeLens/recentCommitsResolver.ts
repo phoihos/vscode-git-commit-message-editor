@@ -4,6 +4,7 @@ import { IGitService } from '../../gitService';
 import { IGitCommit } from '../../gitService/interface';
 import { IConfiguration } from '../../configuration';
 import { findSummaryLine } from '../parser/textDocumentParser';
+import { makeCommitDescription } from '../helper/commitHelper';
 
 export interface ICommitPickItem extends vscode.QuickPickItem {
   readonly commitMessage: string;
@@ -49,13 +50,10 @@ export class RecentCommitsResolver {
 
   private _makePickItem(commit: IGitCommit): ICommitPickItem {
     const lines = commit.message.split(_EOL_REGEX);
-    const detail = [commit.authorName, commit.commitTimeAgo]
-      .filter((e) => e !== undefined && e.length > 0)
-      .join(', ');
 
     return {
       label: lines[0] + (lines.length > 1 ? ` $(more)(+${lines.length - 1})` : ''),
-      description: (detail.length > 0 ? detail + '  ' : '') + `$(git-commit)  ${commit.hashShort}`,
+      description: makeCommitDescription(commit, true),
       commitMessage: commit.message
     };
   }

@@ -1,7 +1,7 @@
 {
   "name": "git-commit-message-editor",
   "displayName": "Git Commit Message Editor",
-  "description": "Edit commit messages via VS Code's editor, and Autocomplete for Conventional Commits",
+  "description": "Edit commit messages via VS Code's editor and Autocomplete for Conventional Commits",
   "icon": "images/icon.png",
   "publisher": "phoihos",
   "repository": {
@@ -116,6 +116,11 @@
           "minimum": 1,
           "maximum": 100,
           "description": "Specifies the maximum number of issues per page to show in the suggestions widget"
+        },
+        "gitCommitMessageEditor.intelliSense.hover.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Controls whether the \"Hover\" feature is enabled or not"
         }
       }
     }

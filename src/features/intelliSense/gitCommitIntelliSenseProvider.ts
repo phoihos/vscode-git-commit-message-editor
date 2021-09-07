@@ -15,8 +15,9 @@ import { TextDocumentParserProxy } from './textDocumentParserProxy';
 import { SummaryCompletionItemProvider } from './summaryCompletionItemProvider';
 import { FooterCompletionItemProvider } from './footerCompletionItemProvider';
 import { TextDocumentEventListener } from './textDocumentEventListener';
+import { GitCommitHoverProvider } from './gitCommitHoverProvider';
 
-export class GitCommitCompletionItemProvider extends vsceUtil.Disposable {
+export class GitCommitIntelliSenseProvider extends vsceUtil.Disposable {
   private readonly _selector = 'git-commit';
 
   constructor(git: IGitService, config: IConfiguration) {
@@ -36,7 +37,7 @@ export class GitCommitCompletionItemProvider extends vsceUtil.Disposable {
       config
     );
 
-    const textDocumentParserProxy = new TextDocumentParserProxy();
+    const parserProxy = new TextDocumentParserProxy();
 
     const commandManager = new vsceUtil.CommandManager();
     commandManager.register(createNewScopeCommand);
@@ -49,23 +50,23 @@ export class GitCommitCompletionItemProvider extends vsceUtil.Disposable {
       new SummaryCompletionItemProvider(
         this._selector,
         summaryCompletionItemManager,
-        textDocumentParserProxy,
+        parserProxy,
         config
       ),
       new FooterCompletionItemProvider(
         this._selector,
         footerCompletionItemManager,
-        textDocumentParserProxy,
+        parserProxy,
         config
       ),
       new TextDocumentEventListener(
         this._selector,
         formatSeparatorCommand.id,
         triggerSuggestCommand.id,
-        footerCompletionItemManager,
-        textDocumentParserProxy,
+        parserProxy,
         git
-      )
+      ),
+      new GitCommitHoverProvider(this._selector, parserProxy, git, config)
     );
     this.register(subscriptions);
   }
