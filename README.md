@@ -1,6 +1,6 @@
 # Git Commit Message Editor
 
-Edit commit messages via VS Code's editor, and Autocomplete for Conventional Commits.
+Edit commit messages via VS Code's editor and Autocomplete for Conventional Commits.
 
 ![Demo](./images/readme/demo.gif)
 
@@ -8,8 +8,8 @@ Edit commit messages via VS Code's editor, and Autocomplete for Conventional Com
 
 - Supports to edit commit messages via VS Code's editor
     - See [details](#editor) below
-- Supports IntelliSense feature to edit commit messages that conform to [Conventional Commits Specification](https://conventionalcommits.org/)
-    - Supported completions
+- Supports IntelliSense to edit commit messages that conform to [Conventional Commits Specification](https://conventionalcommits.org/)
+    - Auto Completions
         - [Commit Types completion](#commit-types-completion)
         - [Scopes completion](#scopes-completion)
             - Includes Workspace level scopes management
@@ -17,6 +17,9 @@ Edit commit messages via VS Code's editor, and Autocomplete for Conventional Com
         - [Footer Types completion](#footer-types-completion)
         - [Issues completion](#issues-completion) for the Footer Type `Closes`
         - [Commits completion](#commits-completion) for the Footer Type `Refs`
+    - [Hovers](#hovers)
+        - Over `Type`, `Scope`, and `Emojis` of the Summary line
+        - Over `Type`, `Issues`, and `Commits` of the Footer lines
     - See [details](#intellisense) below
 - Selecting the previous commit message by `Recent commits...` CodeLens link
     - See [details](#codelens) below
@@ -29,7 +32,7 @@ To install this extension go to **View > Extensions** and search for `git-commit
 
 ### Editor
 
-You can open the commit message editor by click the **Edit icon** in the repository in the **Source Control** view.
+You can open the commit message editor by clicking the **Edit icon** in the repository in the **Source Control** view.
 
 ![Demo Editor 1](./images/readme/demo_editor_1.png)
 
@@ -38,13 +41,13 @@ Or select **Open Commit Message Editor** from the overflow menu in the repositor
 
 ![Demo Editor 2](./images/readme/demo_editor_2.png)
 
-Type commit messages with **IntelliSense** feature, and then save it. The **Source Control** Input Box be filled with the message you typed.
+Type commit messages with **IntelliSense** feature and then save it. The **Source Control** Input Box be filled with the message you typed.
 
 ![Demo Editor 3](./images/readme/demo_editor_3.gif)
 
-If you don't want to close the commit message editor window after saving, change `gitCommitMessageEditor.editor.keepAfterSave` option to `true`. Note that auto-focusing to the **Source Control** view only work with the option is `false`.
+If you don't want to close the commit message editor window after saving, change `gitCommitMessageEditor.editor.keepAfterSave` option to `true`. Note that auto-focusing to the **Source Control** view only works with the option is `false`.
 
-> **Note:** The commit message editor **does not actually create** a `workspace/.git/COMMIT_EDITMSG` file. The file IO operations is handled by the VFS (Virtual File System).
+> **Note:** The commit message editor **does not actually create** a `workspace/.git/COMMIT_EDITMSG` file. The file IO operations are handled by the VFS (Virtual File System).
 
 ### IntelliSense
 
@@ -78,11 +81,11 @@ List of available conventional commit types:
 
 #### Scopes completion
 
-You can type a scope manually, select one that saved, or create a new scope by selecting the `Create New Scope` item in the suggestion list.
+You can type a scope manually, select one that is saved, or create a new scope by selecting the `Create New Scope` item in the suggestion list.
 
 ![Demo IntelliSense Summary 2](./images/readme/demo_intellisense_summary_2.gif)
 
-The scope allows only words, underscores, hyphens and dots (can optionally begin with $) and will be saved into `workspace/.vscode/settings.json`.
+The scope allows only words, underscores, hyphens, and dots (can optionally begin with $) and will be saved into `workspace/.vscode/settings.json`.
 
 #### Gitmojis completion
 
@@ -126,6 +129,12 @@ You can trigger the commit suggestions by selecting the `Refs` item in the foote
 
 The commit suggestions are provided from your local repository.
 
+#### Hovers
+
+You can hover over that `Type`, `Scope`, and `Emojis` of the Summary line and `Type`, `Issues`, and `Commits` of the Footer lines.
+
+![Demo IntelliSense Hover 1](./images/readme/demo_intellisense_hover_1.gif)
+
 ### CodeLens
 
 To select the previous commit message, click the `Recent commits...` CodeLens link.
@@ -133,7 +142,7 @@ To select the previous commit message, click the `Recent commits...` CodeLens li
 
 ![Demo CodeLens 1](./images/readme/demo_codelens_1.gif)
 
-The CodeLens link will be appeared only when no commit message typed.
+The CodeLens link will appear only when no commit message is typed.
 
 ## Settings
 
@@ -147,6 +156,7 @@ Table of contributed settings (prefix "gitCommitMessageEditor."):
 | intelliSense.completion.enabled         | `true`  | Controls whether the \"Quick suggestions\" feature is enabled or not                   |
 | intelliSense.completion.scopes          | `[]`    | Scopes that user created (Scopes will be saved into `workspace/.vscode/settings.json`) |
 | intelliSense.completion.issues.pageSize | `20`    | Specifies the maximum number of issues per page to show in the suggestions widget      |
+| intelliSense.hover.enabled              | `true`  | Controls whether the \"Hover\" feature is enabled or not                               |
 
 And recommends adding a setting below into your Global or Workspace `settings.json`, if you want to follow the **Git 50/72 rule**.
 
