@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## 0.5.0 (2021-09-08)
+
+### Features
+
+* **IntelliSense:** Add hover features for summary and footer
+    * Support Type, Scope and Emoji of the Summary line
+    * Support Type, Issues and Commits of the Footer lines
+
+### Others
+
+* Update README
+    * Add descriptions for new features
+    * Update other descriptions
+
 ### 0.4.2 (2021-09-06)
 
 ### Bug Fixes

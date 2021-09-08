@@ -14,7 +14,7 @@
   "homepage": "https://github.com/phoihos/vscode-git-commit-message-editor#readme",
   "license": "MIT",
   "preview": true,
-  "version": "0.4.2",
+  "version": "0.5.0",
   "engines": {
     "vscode": "^1.49.0"
   },
