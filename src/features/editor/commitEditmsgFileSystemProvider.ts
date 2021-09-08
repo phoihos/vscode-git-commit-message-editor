@@ -12,8 +12,8 @@ export class CommitEditmsgFileSystemProvider
   implements vscode.FileSystemProvider
 {
   private readonly _scheme = 'commit-editmsg';
-  private readonly _encorder = new TextEncoder();
-  private readonly _decorder = new TextDecoder();
+  private readonly _encoder = new TextEncoder();
+  private readonly _decoder = new TextDecoder();
 
   private readonly _onDidChangeFile = new vscode.EventEmitter<vscode.FileChangeEvent[]>();
 
@@ -68,7 +68,7 @@ export class CommitEditmsgFileSystemProvider
     const repository = this._git.getRepository(uri);
     if (repository === undefined) return new Uint8Array();
 
-    return this._encorder.encode(repository.inputBox.value);
+    return this._encoder.encode(repository.inputBox.value);
   }
 
   public writeFile(
@@ -79,7 +79,7 @@ export class CommitEditmsgFileSystemProvider
     const repository = this._git.getRepository(uri);
     if (repository === undefined) return new Promise(() => {});
 
-    const message = this._decorder.decode(content);
+    const message = this._decoder.decode(content);
 
     // strip trailing whitespaces
     repository.inputBox.value = message.replace(/\s+$/, '').replace(/[\t\f\v ]+(\r?\n)/g, '$1');
