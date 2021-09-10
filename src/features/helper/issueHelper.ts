@@ -6,7 +6,7 @@ import * as vscode from 'vscode';
 
 import { IGitIssue } from '../../gitService/interface';
 
-import { parseMarkdown } from './widgetMarkdownHelper';
+import { minifyMarkdown } from './markdownHelper';
 
 export const ISSUE_BODY_LENGTH = 280;
 
@@ -90,7 +90,7 @@ export function makeIssueMarkdown(
   markdown.appendMarkdown('\n\n---\n\n');
 
   // body
-  let body = parseMarkdown(issue.body);
+  let body = minifyMarkdown(issue.body);
   body = body.length > ISSUE_BODY_LENGTH ? body.substr(0, ISSUE_BODY_LENGTH) + '...' : body;
   markdown.appendMarkdown(body);
 

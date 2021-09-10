@@ -4,11 +4,11 @@
 
 import * as marked from 'marked';
 
-export class WidgetMarkdownRenderer extends marked.Renderer {
+export class UglyMarkdownRenderer extends marked.Renderer {
   public code(code: string, language: string | undefined, _isEscaped: boolean): string {
     return `\`${
       language === 'markdown' || language === 'md'
-        ? marked.parse(code, { renderer: new WidgetMarkdownRenderer() })
+        ? marked.parse(code, { renderer: new UglyMarkdownRenderer() })
         : code
     }\` `;
   }
@@ -85,7 +85,7 @@ export class WidgetMarkdownRenderer extends marked.Renderer {
 const _CODEBLOCK_REGEX = /`.+`/g;
 const _UNESCAPE_REGEX = /&(lt|gt|nbsp|amp|quot);/g;
 
-function _unescapeCodeBlock(value: string): string {
+function _unescapeCodeBlock(markdown: string): string {
   function __unescape(entity: string): string {
     switch (entity) {
       case 'lt':
@@ -103,13 +103,13 @@ function _unescapeCodeBlock(value: string): string {
     }
   }
 
-  return value.replace(_CODEBLOCK_REGEX, (codeBlock) => {
+  return markdown.replace(_CODEBLOCK_REGEX, (codeBlock) => {
     return codeBlock.replace(_UNESCAPE_REGEX, (_, entity) => {
       return __unescape(entity);
     });
   });
 }
 
-export function parseMarkdown(value: string): string {
-  return _unescapeCodeBlock(marked.parse(value, { renderer: new WidgetMarkdownRenderer() }));
+export function minifyMarkdown(markdown: string): string {
+  return _unescapeCodeBlock(marked.parse(markdown, { renderer: new UglyMarkdownRenderer() }));
 }
