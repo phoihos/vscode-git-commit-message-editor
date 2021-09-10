@@ -41,6 +41,11 @@ class SummaryHoverProvider {
       const scope = this._config.userScopes.find((e) => e.scope === tokens.scope);
 
       if (scope !== undefined) {
+        const leadingChar = line.text.charAt(range.start.character - 1);
+        if (leadingChar === '$') {
+          range = range.with(range.start.translate(0, -1));
+        }
+
         return new vscode.Hover(new vscode.MarkdownString(scope.description), range);
       }
     } else if (tokens.tokenTypeAt === ETokenType.Desc) {
@@ -89,6 +94,7 @@ class FooterHoverProvider {
         const leadingChar = line.text.charAt(range.start.character - 1);
         if (leadingChar === '#') {
           const issueNumber = parseInt(document.getText(range));
+          range = range.with(range.start.translate(0, -1));
 
           return this._git
             .getIssue(document.uri, issueNumber)
