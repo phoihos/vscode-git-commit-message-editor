@@ -4,7 +4,7 @@
     { "type": "fix", "section": "Bug Fixes" },
     { "type": "docs", "section": "Others" },
     { "type": "style", "hidden": true },
-    { "type": "refactor", "section": "Enhancements" },
+    { "type": "refactor", "hidden": true },
     { "type": "perf", "section": "Enhancements" },
     { "type": "test", "hidden": true },
     { "type": "build", "hidden": true },
