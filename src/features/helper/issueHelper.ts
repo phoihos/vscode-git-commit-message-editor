@@ -41,7 +41,7 @@ function _getIssueIcon(state: string): string {
   }
 }
 
-function _getLocaleString(dateString: string) {
+function _getLocaleString(dateString: string): string {
   const date = new Date(dateString);
 
   return date.toLocaleString('default', {
@@ -49,6 +49,22 @@ function _getLocaleString(dateString: string) {
     month: 'short',
     year: 'numeric'
   });
+}
+
+function _calcBodyLengthLimit(body: string): number {
+  let offset = 0;
+
+  const imageLinkRegex = /!\[.*\]\(.+\)/g;
+  let match: RegExpExecArray | null;
+
+  while ((match = imageLinkRegex.exec(body)) !== null) {
+    if (match.index - offset >= ISSUE_BODY_LENGTH) {
+      break;
+    }
+    offset += match[0].length - 1;
+  }
+
+  return ISSUE_BODY_LENGTH + offset;
 }
 
 export function makeIssueMarkdown(
@@ -91,7 +107,8 @@ export function makeIssueMarkdown(
 
   // body
   let body = minifyMarkdown(issue.body);
-  body = body.length > ISSUE_BODY_LENGTH ? body.substr(0, ISSUE_BODY_LENGTH) + '...' : body;
+  const bodyLengthLimit = _calcBodyLengthLimit(body);
+  body = body.length > bodyLengthLimit ? body.substr(0, bodyLengthLimit) + '...' : body;
   markdown.appendMarkdown(body);
 
   return markdown;

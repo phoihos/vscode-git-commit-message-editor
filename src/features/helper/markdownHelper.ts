@@ -75,7 +75,7 @@ export class UglyMarkdownRenderer extends marked.Renderer {
     return text + ' ';
   }
   public image(_href: string, _title: string, _text: string): string {
-    return '';
+    return `![](${_href}|height=14px) `;
   }
   public text(text: string): string {
     return text;
