@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 0.5.1 (2021-09-16)
+
+### Bug Fixes
+
+* Fix previewing of images in the issue description widget
+* Fix the calculation of some hover ranges
+
 ## 0.5.0 (2021-09-08)
 
 ### Features
