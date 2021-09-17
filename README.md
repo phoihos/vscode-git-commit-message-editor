@@ -152,7 +152,7 @@ Table of contributed settings (prefix "gitCommitMessageEditor."):
 | --------------------------------------- | ------- | -------------------------------------------------------------------------------------- |
 | editor.keepAfterSave                    | `false` | Controls whether the commit message editor tab keep or close, after saving             |
 | codeLens.recentCommits.enabled          | `true`  | Controls whether the `Recent commits...` code lens feature is enabled or not           |
-| codeLens.recentCommits.maxItems         | `16`    | Specifies the maximum number of commits to show in the quick pick UI                   |
+| codeLens.recentCommits.maxItems         | `32`    | Specifies the maximum number of commits to show in the quick pick UI                   |
 | intelliSense.completion.enabled         | `true`  | Controls whether the \"Quick suggestions\" feature is enabled or not                   |
 | intelliSense.completion.scopes          | `[]`    | Scopes that user created (Scopes will be saved into `workspace/.vscode/settings.json`) |
 | intelliSense.completion.issues.pageSize | `20`    | Specifies the maximum number of issues per page to show in the suggestions widget      |
