@@ -136,6 +136,9 @@
     "lint": "eslint src --ext ts",
     "test": "node ./out/test/runTest.js",
     "release": "standard-version --skip.tag",
+    "release-m": "npm run release -- --release-as major",
+    "release-n": "npm run release -- --release-as minor",
+    "release-p": "npm run release -- --release-as patch",
     "release:tag": "standard-version --skip.bump --skip.changelog --skip.commit"
   },
   "standard-version": {
