@@ -15,14 +15,22 @@ export class OpenEditorCommand implements ICommand {
     this._git = git;
   }
 
-  public async execute(): Promise<void> {
+  public async execute(arg: any): Promise<void> {
     if (this._git.api === undefined) return;
 
-    const repository =
-      this._git.api.repositories.find((e) => e.ui.selected) ?? this._git.api.repositories[0];
-    if (repository === undefined) return;
+    let repoRootUri: vscode.Uri | undefined = undefined;
 
-    const path = repository.rootUri.path + '/.git/COMMIT_EDITMSG';
+    if (typeof arg === 'object' && arg.rootUri instanceof vscode.Uri) {
+      repoRootUri = arg.rootUri;
+    } else {
+      const repository =
+        this._git.api.repositories.find((e) => e.ui.selected) ?? this._git.api.repositories[0];
+      repoRootUri = repository?.rootUri;
+    }
+
+    if (repoRootUri === undefined) return;
+
+    const path = repoRootUri.path + '/.git/COMMIT_EDITMSG';
     const uri = vscode.Uri.file(path).with({ scheme: this._scheme });
 
     return vscode.commands.executeCommand('vscode.open', uri, { preview: false });
