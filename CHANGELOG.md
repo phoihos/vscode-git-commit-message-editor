@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 0.5.2 (2021-10-14)
+
+### Bug Fixes
+
+* Unable to open the specific repo from the Source Control view, closes [#1](https://github.com/phoihos/vscode-git-commit-message-editor/issues/1)
+
 ### 0.5.1 (2021-09-16)
 
 ### Bug Fixes
