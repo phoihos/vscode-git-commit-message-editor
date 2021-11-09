@@ -23,8 +23,12 @@ export class OpenEditorCommand implements ICommand {
     if (typeof arg === 'object' && arg.rootUri instanceof vscode.Uri) {
       repoRootUri = arg.rootUri;
     } else {
+      const uri = vscode.window.activeTextEditor?.document.uri;
       const repository =
-        this._git.api.repositories.find((e) => e.ui.selected) ?? this._git.api.repositories[0];
+        (uri !== undefined ? this._git.getRepository(uri) : undefined) ??
+        this._git.api.repositories.find((e) => e.ui.selected) ??
+        this._git.api.repositories[0];
+
       repoRootUri = repository?.rootUri;
     }
 
