@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 0.5.3 (2021-11-12)
+
+### Features
+
+* **Editor:** Open the commit message editor with the repository containing the current active file
+
 ### 0.5.2 (2021-10-14)
 
 ### Bug Fixes
