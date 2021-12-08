@@ -3,6 +3,7 @@ import * as vscode from 'vscode';
 import { IGitService } from '../../gitService';
 import { IGitIssue } from '../../gitService/interface';
 import { IConfiguration } from '../../configuration';
+
 import { makeCommitDescription, makeCommitMarkdown } from '../helper/commitHelper';
 
 import { TokenCompletionItem, IrregularCompletionItem } from './tokenCompletionItem';

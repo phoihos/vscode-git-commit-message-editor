@@ -36,7 +36,9 @@ export class TextDocumentEventListener extends EventListenerBase {
     this._git = git;
 
     this._eventCallbackMap.set(':', this._formatSeparator.bind(this));
-    this._eventCallbackMap.set('#', this._triggerSuggest.bind(this));
+    this._eventCallbackMap.set('(', this._triggerSuggestScopes.bind(this));
+    this._eventCallbackMap.set('()', this._triggerSuggestScopes.bind(this));
+    this._eventCallbackMap.set('#', this._triggerSuggestIssues.bind(this));
 
     const subscriptions: vscode.Disposable[] = [];
     subscriptions.push(
@@ -81,7 +83,21 @@ export class TextDocumentEventListener extends EventListenerBase {
     }
   }
 
-  private _triggerSuggest(document: vscode.TextDocument, position: vscode.Position): void {
+  private _triggerSuggestScopes(document: vscode.TextDocument, position: vscode.Position): void {
+    const lineType = this._parserProxy.getLineType(document, position.line);
+
+    if (lineType & ELineType.Summary) {
+      const line = document.lineAt(position.line);
+      const leadingText = line.text.substring(0, position.character + 1);
+      const tokens = parseSummary(leadingText);
+
+      if (tokens.tokenTypeAt === ETokenType.Scope) {
+        vscode.commands.executeCommand(this._triggerSuggestCommandId);
+      }
+    }
+  }
+
+  private _triggerSuggestIssues(document: vscode.TextDocument, position: vscode.Position): void {
     const lineType = this._parserProxy.getLineType(document, position.line);
 
     if (lineType & ELineType.Footer) {

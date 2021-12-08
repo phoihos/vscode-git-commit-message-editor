@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 
 import { IGitService } from '../../gitService';
 import { IConfiguration } from '../../configuration';
+
 import { makeIssueMarkdown } from '../helper/issueHelper';
 import { makeCommitMarkdown } from '../helper/commitHelper';
 

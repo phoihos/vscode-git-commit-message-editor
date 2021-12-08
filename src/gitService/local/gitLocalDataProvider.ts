@@ -17,8 +17,9 @@ class GitLocalDataProvider implements IGitDataProvider {
 
   public getCommits(query: IGitCommitListQuery): Promise<IGitCommit[]> {
     const { repository, maxEntries } = query;
+    const queryString = `commits?count=${maxEntries}`;
 
-    return this._getOrFetch(repository, () => {
+    return this._getOrFetch(repository, queryString, () => {
       return repository
         .log({ maxEntries })
         .catch((err): IGitCommitBase[] => {
@@ -74,8 +75,12 @@ class GitLocalDataProvider implements IGitDataProvider {
 
   public dispose(): void {}
 
-  private _getOrFetch<T>(repository: IGitRepository, fetch: () => Promise<T[]>): Promise<T[]> {
-    const key = repository.rootUri.path;
+  private _getOrFetch<T>(
+    repository: IGitRepository,
+    query: string,
+    fetch: () => Promise<T[]>
+  ): Promise<T[]> {
+    const key = repository.rootUri.path + '/' + query;
 
     let value = this._cache.get(key);
     if (value === undefined) {

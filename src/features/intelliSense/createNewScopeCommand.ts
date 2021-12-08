@@ -2,6 +2,8 @@ import * as vscode from 'vscode';
 
 import { ISummaryScope, IConfiguration } from '../../configuration';
 
+import { SUMMARY_TOKEN_SCOPE_REGEX } from '../parser/syntaxRegex';
+
 import { ICommand } from '@phoihos/vsce-util';
 
 export class CreateNewScopeCommand implements ICommand {
@@ -56,7 +58,7 @@ export class CreateNewScopeCommand implements ICommand {
         if (lowerScope === '$') return 'Not allow only $';
         if (lowerScopes.includes(lowerScope)) return 'Already exists';
 
-        return /^\$?[\w\-\.]+$/.test(lowerScope)
+        return SUMMARY_TOKEN_SCOPE_REGEX.test(lowerScope)
           ? ''
           : 'Allow only words, underscores, hyphens and dots (can optionally begin with $)';
       }

@@ -3,7 +3,9 @@ import * as vscode from 'vscode';
 import { IGitService } from '../../gitService';
 import { IGitCommit } from '../../gitService/interface';
 import { IConfiguration } from '../../configuration';
+
 import { findSummaryLine } from '../parser/textDocumentParser';
+import { EOL_REGEX } from '../parser/syntaxRegex';
 import { makeCommitDescription } from '../helper/commitHelper';
 
 export interface ICommitPickItem extends vscode.QuickPickItem {
@@ -14,8 +16,6 @@ export interface IRecentCommits {
   readonly pickItems: ICommitPickItem[];
   readonly insertRange: vscode.Range;
 }
-
-const _EOL_REGEX = /\r?\n/;
 
 export class RecentCommitsResolver {
   private readonly _git: IGitService;
@@ -49,7 +49,7 @@ export class RecentCommitsResolver {
   }
 
   private _makePickItem(commit: IGitCommit): ICommitPickItem {
-    const lines = commit.message.split(_EOL_REGEX);
+    const lines = commit.message.split(EOL_REGEX);
 
     return {
       label: lines[0] + (lines.length > 1 ? ` $(more)(+${lines.length - 1})` : ''),

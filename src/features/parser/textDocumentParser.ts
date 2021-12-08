@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 
 import { ETokenType, parseFooter } from './textLineParser';
+import { FOOTER_SENTENCE_REGEXES } from './syntaxRegex';
 
 export enum ELineType {
   None = 0x00,
@@ -8,9 +9,6 @@ export enum ELineType {
   Body = 0x02,
   Footer = 0x04
 }
-
-// see: https://github.com/conventional-commits/parser#the-grammar
-const _FOOTER_BC_REGEXES = [/^(BREAKING CHANGE|\!)(: )(.*)$/i, /^([\w\-]+)(: | #)(.*)$/];
 
 export function getLineType(
   document: vscode.TextDocument,
@@ -88,7 +86,7 @@ export function findBodyFooterLines(
         if (line.isEmptyOrWhitespace) {
           emptyFooterLineStart = emptyFooterLineStart ?? bodyLines.length;
         } else {
-          if (_FOOTER_BC_REGEXES.some((regex) => regex.test(line.text))) {
+          if (FOOTER_SENTENCE_REGEXES.some((regex) => regex.test(line.text))) {
             matchedFooterLineStart = bodyLines.length;
           } else {
             greedyFooterLineStart = greedyFooterLineStart ?? bodyLines.length;

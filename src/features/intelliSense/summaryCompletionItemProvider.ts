@@ -3,7 +3,11 @@ import * as vscode from 'vscode';
 import { IConfiguration } from '../../configuration';
 
 import * as vsceUtil from '@phoihos/vsce-util';
-import { EMOJI_RANGE_REGEX, SummaryCompletionItemManager } from './summaryCompletionItemManager';
+import {
+  SummaryCompletionItemManager,
+  SCOPE_RANGE_REGEX,
+  EMOJI_RANGE_REGEX
+} from './summaryCompletionItemManager';
 import { TextDocumentParserProxy, ELineType, ETokenType } from './textDocumentParserProxy';
 import { parseSummary } from './textDocumentParserProxy';
 
@@ -11,7 +15,7 @@ export class SummaryCompletionItemProvider
   extends vsceUtil.Disposable
   implements vscode.CompletionItemProvider
 {
-  private readonly _triggers = ['(', ':'];
+  private readonly _triggers = [':'];
 
   private readonly _itemManager: SummaryCompletionItemManager;
   private readonly _parserProxy: TextDocumentParserProxy;
@@ -56,30 +60,17 @@ export class SummaryCompletionItemProvider
       if (tokens.tokenTypeAt === ETokenType.None || tokens.tokenTypeAt === ETokenType.Type) {
         return this._itemManager.typeItems;
       } else if (tokens.tokenTypeAt === ETokenType.Scope) {
-        return this._itemManager.scopeItems.map((e) => {
-          e.range = document.getWordRangeAtPosition(position, e.rangeRegex);
-          return e;
-        });
+        return this._itemManager.getScopeItems(
+          document.uri,
+          document.getWordRangeAtPosition(position, SCOPE_RANGE_REGEX)
+        );
       } else if (tokens.tokenTypeAt === ETokenType.Desc) {
         const emojiRange = document.getWordRangeAtPosition(position, EMOJI_RANGE_REGEX);
-
         if (emojiRange !== undefined) {
           const needsFilter = context.triggerKind === vscode.CompletionTriggerKind.TriggerCharacter;
           const filterToken = needsFilter ? (tokens.isBreaking ? '!' : tokens.type) : '*';
 
-          const fallbackItems: vscode.CompletionItem[] = [];
-          const items = this._itemManager.emojiItems.filter((e) => {
-            e.range = emojiRange;
-            if (e.filterToken === filterToken) {
-              e.documentation = e.filterDoc;
-              return true;
-            }
-            e.documentation = e.nonFilterDoc;
-            fallbackItems.push(e);
-            return false;
-          });
-
-          return items.length > 0 ? items : fallbackItems;
+          return this._itemManager.getEmojiItems(emojiRange, filterToken);
         }
       }
     }

@@ -29,6 +29,7 @@ export class GitCommitIntelliSenseProvider extends vsceUtil.Disposable {
 
     const summaryCompletionItemManager = new SummaryCompletionItemManager(
       createNewScopeCommand.id,
+      git,
       config
     );
     const footerCompletionItemManager = new FooterCompletionItemManager(

@@ -12,7 +12,8 @@ Edit commit messages via VS Code's editor and Autocomplete for Conventional Comm
     - Auto Completions
         - [Commit Types completion](#commit-types-completion)
         - [Scopes completion](#scopes-completion)
-            - Includes Workspace level scopes management
+            - Includes Workspace level user scopes management
+            - Supports auto grepping the scopes from existing commit history
         - [Gitmojis completion](#gitmojis-completion)
         - [Footer Types completion](#footer-types-completion)
         - [Issues completion](#issues-completion) for the Footer Type `Closes`
@@ -82,6 +83,7 @@ List of available conventional commit types:
 #### Scopes completion
 
 You can type a scope manually, select one that is saved, or create a new scope by selecting the `Create New Scope` item in the suggestion list.
+> **Note:** If `gitCommitMessageEditor.intelliSense.completion.logScopes.enabled` option is `true`, the scope suggestion list also includes the parsed scopes from existing commit history.
 
 ![Demo IntelliSense Summary 2](./images/readme/demo_intellisense_summary_2.gif)
 
@@ -148,15 +150,16 @@ The CodeLens link will appear only when no commit message is typed.
 
 Table of contributed settings (prefix "gitCommitMessageEditor."):
 
-| Name                                    | Default | Description                                                                            |
-| --------------------------------------- | ------- | -------------------------------------------------------------------------------------- |
-| editor.keepAfterSave                    | `false` | Controls whether the commit message editor tab keep or close, after saving             |
-| codeLens.recentCommits.enabled          | `true`  | Controls whether the `Recent commits...` code lens feature is enabled or not           |
-| codeLens.recentCommits.maxItems         | `32`    | Specifies the maximum number of commits to show in the quick pick UI                   |
-| intelliSense.completion.enabled         | `true`  | Controls whether the \"Quick suggestions\" feature is enabled or not                   |
-| intelliSense.completion.scopes          | `[]`    | Scopes that user created (Scopes will be saved into `workspace/.vscode/settings.json`) |
-| intelliSense.completion.issues.pageSize | `20`    | Specifies the maximum number of issues per page to show in the suggestions widget      |
-| intelliSense.hover.enabled              | `true`  | Controls whether the \"Hover\" feature is enabled or not                               |
+| Name                                      | Default | Description                                                                                          |
+| ----------------------------------------- | ------- | ---------------------------------------------------------------------------------------------------- |
+| editor.keepAfterSave                      | `false` | Controls whether the commit message editor tab keep or close, after saving                           |
+| codeLens.recentCommits.enabled            | `true`  | Controls whether the `Recent commits...` code lens feature is enabled or not                         |
+| codeLens.recentCommits.maxItems           | `32`    | Specifies the maximum number of commits to show in the quick pick UI                                 |
+| intelliSense.completion.enabled           | `true`  | Controls whether the \"Quick suggestions\" feature is enabled or not                                 |
+| intelliSense.completion.scopes            | `[]`    | Scopes that user created (Scopes will be saved into `workspace/.vscode/settings.json`)               |
+| intelliSense.completion.logScopes.enabled | `false` | Controls whether the scope suggestions include or not the parsed scopes from existing commit history |
+| intelliSense.completion.issues.pageSize   | `20`    | Specifies the maximum number of issues per page to show in the suggestions widget                    |
+| intelliSense.hover.enabled                | `true`  | Controls whether the \"Hover\" feature is enabled or not                                             |
 
 And recommends adding a setting below into your Global or Workspace `settings.json`, if you want to follow the **Git 50/72 rule**.
 
