@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## 0.6.0 (2021-12-08)
+
+### Features
+
+* **IntelliSense:** Add a new scope suggestion feature
+    * If `gitCommitMessageEditor.intelliSense.completion.logScopes.enabled` option is `true`, the scope suggestion list also includes the parsed scopes from existing commit history.
+
+### Others
+
+* Update gitmojis module to v3.8.0
+
 ### 0.5.3 (2021-11-12)
 
 ### Features
