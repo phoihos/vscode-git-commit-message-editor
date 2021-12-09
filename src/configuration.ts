@@ -14,7 +14,9 @@ export interface IConfiguration extends vsceUtil.IDisposable {
   readonly completionEnabled: boolean;
   readonly userScopes: ISummaryScope[];
   readonly logScopesEnabled: boolean;
+  readonly logScopesMaxCommits: number;
   readonly issuesPageSize: number;
+  readonly commitsPageSize: number;
   readonly hoverEnabled: boolean;
 
   updateUserScopes(userScopes: ISummaryScope[]): Thenable<void>;
@@ -59,8 +61,16 @@ class Configuration extends vsceUtil.Disposable implements IConfiguration {
     return this._getConfigValue<boolean>('intelliSense.completion.logScopes.enabled', false);
   }
 
+  get logScopesMaxCommits(): number {
+    return this.recentCommitsMaxItems;
+  }
+
   get issuesPageSize(): number {
     return this._getConfigValue<number>('intelliSense.completion.issues.pageSize', 20);
+  }
+
+  get commitsPageSize(): number {
+    return this.recentCommitsMaxItems;
   }
 
   get hoverEnabled(): boolean {

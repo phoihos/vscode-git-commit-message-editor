@@ -113,23 +113,25 @@ export class FooterCompletionItemManager {
   }
 
   public getCommitItems(uri: vscode.Uri): Thenable<TokenCompletionItem[]> {
-    return this._git.getCommits(uri).then((commits): TokenCompletionItem[] => {
-      const orderPadding = (commits.length - 1).toString().length;
+    return this._git
+      .getCommits(uri, this._config.commitsPageSize)
+      .then((commits): TokenCompletionItem[] => {
+        const orderPadding = (commits.length - 1).toString().length;
 
-      const items = commits.map((e, i) => {
-        const item = new TokenCompletionItem(e.hashShort, vscode.CompletionItemKind.Constant);
-        item.detail = makeCommitDescription(e);
-        item.documentation = makeCommitMarkdown(e);
-        item.sortText = i.toString().padStart(orderPadding, '0');
-        return item;
+        const items = commits.map((e, i) => {
+          const item = new TokenCompletionItem(e.hashShort, vscode.CompletionItemKind.Constant);
+          item.detail = makeCommitDescription(e);
+          item.documentation = makeCommitMarkdown(e);
+          item.sortText = i.toString().padStart(orderPadding, '0');
+          return item;
+        });
+
+        if (items.length === 0) {
+          items.push(this._noCommitsItem);
+        }
+
+        return items;
       });
-
-      if (items.length === 0) {
-        items.push(this._noCommitsItem);
-      }
-
-      return items;
-    });
   }
 
   private _createNoIssuesItem(): TokenCompletionItem {

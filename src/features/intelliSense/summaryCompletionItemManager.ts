@@ -79,7 +79,7 @@ export class SummaryCompletionItemManager {
   ): Thenable<TokenCompletionItem[]> {
     const logScopesLoading = this._config.logScopesEnabled
       ? this._git
-          .getCommits(uri, this._config.recentCommitsMaxItems)
+          .getCommits(uri, this._config.logScopesMaxCommits)
           .then((commits): ISummaryScope[] => {
             return this._grepLogScopes(commits);
           })
