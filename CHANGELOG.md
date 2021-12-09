@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 0.6.1 (2021-12-09)
+
+### Bug Fixes
+
+* Can't resolve git hosting service url with SSH protocol, closes [#3](https://github.com/phoihos/vscode-git-commit-message-editor/issues/3)
+
 ## 0.6.0 (2021-12-08)
 
 ### Features
