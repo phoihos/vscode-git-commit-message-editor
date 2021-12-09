@@ -49,9 +49,35 @@ function _getRepositoryName(path: string): string {
   return lastSegment.replace(/\/$/, '').replace(/\.git$/, '');
 }
 
-function _parseRemote(name: string, url: string): IGitRemote | undefined {
-  if (url.length === 0) return undefined;
+const URL_SCHEME_REGEX = /^([A-Za-z0-9+.-]+):\/\//;
+const SSH_URL_REGEX = /^(?:([^@:]+)@)?([^:/]+):?(.+)$/;
 
+function _parseSshUrl(name: string, url: string): IGitRemote | undefined {
+  const urlSchemeMatch = URL_SCHEME_REGEX.exec(url);
+  if (urlSchemeMatch !== null) {
+    const fullSchemePrefix = urlSchemeMatch[0];
+    const scheme = urlSchemeMatch[1].toLocaleLowerCase();
+    if (scheme === 'ssh' || scheme === 'git+ssh') {
+      url = url.slice(fullSchemePrefix.length);
+    } else {
+      return undefined;
+    }
+  }
+  const sshUrlMatch = SSH_URL_REGEX.exec(url);
+  if (sshUrlMatch === null) return undefined;
+
+  const [, , hostName, path] = sshUrlMatch;
+  const remote: IGitRemote = {
+    name,
+    host: hostName.toLocaleLowerCase(),
+    owner: _getOwnerName(path),
+    repo: _getRepositoryName(path)
+  };
+
+  return remote.host.length > 0 ? remote : undefined;
+}
+
+function _parseHttpUrl(name: string, url: string): IGitRemote | undefined {
   const uri = vscode.Uri.parse(url);
   const remote: IGitRemote = {
     name,
@@ -61,6 +87,12 @@ function _parseRemote(name: string, url: string): IGitRemote | undefined {
   };
 
   return remote.host.length > 0 ? remote : undefined;
+}
+
+function _parseRemote(name: string, url: string): IGitRemote | undefined {
+  if (url.length === 0) return undefined;
+
+  return _parseSshUrl(name, url) ?? _parseHttpUrl(name, url);
 }
 
 export default function getOriginRemote(repository: IGitRepository): IGitRemote | undefined {
