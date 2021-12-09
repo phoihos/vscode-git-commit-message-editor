@@ -6,9 +6,10 @@ import * as vscode from 'vscode';
 
 import { IGitRepository, IGitRemote } from './interface';
 
+const HTTP_AUTH_REGEX = /^(?:.*:?@)?([^:]*)(?::.*)?$/; // <username>:<password>@<authority>:<port>
+
 function _getHostName(authority: string): string {
-  // <username>:<password>@<authority>:<port>
-  const matches = /^(?:.*:?@)?([^:]*)(?::.*)?$/.exec(authority);
+  const matches = HTTP_AUTH_REGEX.exec(authority);
 
   if (matches !== null && matches.length >= 2) {
     const hostName = matches[1].toLocaleLowerCase();
@@ -49,8 +50,8 @@ function _getRepositoryName(path: string): string {
   return lastSegment.replace(/\/$/, '').replace(/\.git$/, '');
 }
 
-const URL_SCHEME_REGEX = /^([A-Za-z0-9+.-]+):\/\//;
-const SSH_URL_REGEX = /^(?:([^@:]+)@)?([^:/]+):?(.+)$/;
+const URL_SCHEME_REGEX = /^([A-Za-z0-9+.-]+):\/\//; // <protocol>://
+const SSH_URL_REGEX = /^(?:([^@:]+)@)?([^:/]+):?(.+)$/; // <ssh-info>@<hostname>:<repo-path>
 
 function _parseSshUrl(name: string, url: string): IGitRemote | undefined {
   const urlSchemeMatch = URL_SCHEME_REGEX.exec(url);
@@ -89,7 +90,7 @@ function _parseHttpUrl(name: string, url: string): IGitRemote | undefined {
   return remote.host.length > 0 ? remote : undefined;
 }
 
-function _parseRemote(name: string, url: string): IGitRemote | undefined {
+function _parseRemoteUrl(name: string, url: string): IGitRemote | undefined {
   if (url.length === 0) return undefined;
 
   return _parseSshUrl(name, url) ?? _parseHttpUrl(name, url);
@@ -104,5 +105,5 @@ export default function getOriginRemote(repository: IGitRepository): IGitRemote 
   const remoteUrl = remote.fetchUrl ?? remote.pushUrl;
   if (remoteUrl === undefined) return undefined;
 
-  return _parseRemote(remoteName, remoteUrl);
+  return _parseRemoteUrl(remoteName, remoteUrl);
 }
