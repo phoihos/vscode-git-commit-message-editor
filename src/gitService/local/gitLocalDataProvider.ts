@@ -37,13 +37,17 @@ class GitLocalDataProvider implements IGitDataProvider {
   public async getCommit(query: IGitCommitQuery): Promise<IGitCommit | undefined> {
     const { repository, hash } = query;
 
-    const key = repository.rootUri.path;
+    const key = repository.rootUri.path + '/commits';
 
-    let value = this._cache.get(key);
-    if (value !== undefined) {
-      const commits: IGitCommit[] = await value;
-      const commit = commits.find((e) => e.hashShort === hash || e.hash === hash);
-      if (commit !== undefined) return commit;
+    for (const superKey of this._cache.keys()) {
+      if (superKey.includes(key)) {
+        let value = this._cache.get(superKey);
+        if (value !== undefined) {
+          const commits: IGitCommit[] = await value;
+          const commit = commits.find((e) => e.hashShort === hash || e.hash === hash);
+          if (commit !== undefined) return commit;
+        }
+      }
     }
 
     return repository
@@ -70,7 +74,11 @@ class GitLocalDataProvider implements IGitDataProvider {
   public clearCache(query: IGitDataQuery): void {
     const key = query.repository.rootUri.path;
 
-    this._cache.delete(key);
+    for (const superKey of this._cache.keys()) {
+      if (superKey.includes(key)) {
+        this._cache.delete(superKey);
+      }
+    }
   }
 
   public dispose(): void {}
