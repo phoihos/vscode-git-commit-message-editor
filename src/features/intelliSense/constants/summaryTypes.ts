@@ -109,7 +109,7 @@ export const summaryTypes: ISummaryType[] = (function () {
   }
   const commitizenTypes = require('conventional-commit-types').types as ICommitizenTypes;
 
-  return summaryTypes.map((e) => {
+  return summaryTypes.map((e): ISummaryType => {
     return { ...e, ...commitizenTypes[e.type] };
   });
 })();

@@ -26,7 +26,7 @@ function _convertDateToTimeAgo(date: Date | undefined): string | undefined {
 }
 
 export function extendCommits(commits: IGitCommitBase[]): IGitCommit[] {
-  return commits.map((e) => {
+  return commits.map((e): IGitCommit => {
     return {
       ...e,
       hashShort: e.hash.substring(0, 7), // short hash (7-digit)

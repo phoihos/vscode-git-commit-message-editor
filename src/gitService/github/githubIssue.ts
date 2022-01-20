@@ -2,7 +2,14 @@ import { components } from '@octokit/openapi-types';
 
 import { IGitRepository, IGitRemote, IGitIssue, ILabel, IMilestone } from '../interface';
 
-export type GitHubIssueModel = components['schemas']['issue-simple'];
+export type GitHubIssueModel = components['schemas']['issue'];
+
+type GitHubLabelModel = {
+  name: string;
+  color: string;
+};
+
+type GitHubMilestoneModel = NonNullable<components['schemas']['nullable-milestone']>;
 
 export class GitHubIssue implements IGitIssue {
   get id(): number {
@@ -57,11 +64,21 @@ export class GitHubIssue implements IGitIssue {
     this._remote = remote;
 
     this._issue = issue;
-    this._labels = this._makeLabels(issue.labels, remote);
-    this._milestone = this._makeMilestone(issue.milestone);
+    this._labels = this._makeLabels(issue, remote);
+    this._milestone = this._makeMilestone(issue);
   }
 
-  private _makeLabels(labels: { name: string; color: string }[], remote: IGitRemote): ILabel[] {
+  private _makeLabels(issue: GitHubIssueModel, remote: IGitRemote): ILabel[] {
+    const labels = issue.labels.reduce<GitHubLabelModel[]>((acc, e) => {
+      if (typeof e === 'string') {
+        acc.push({ name: e, color: '#ffffff' });
+      } else {
+        if (e.name !== undefined) {
+          acc.push({ name: e.name, color: e.color ?? '#ffffff' });
+        }
+      }
+      return acc;
+    }, []);
     const ownerRepo = `${remote.owner}/${remote.repo}`;
 
     return labels.map((e): ILabel => {
@@ -73,16 +90,9 @@ export class GitHubIssue implements IGitIssue {
     });
   }
 
-  private _makeMilestone(
-    milestone: {
-      id: number;
-      number: number;
-      title: string;
-      created_at: string;
-      due_on: string | null;
-      html_url: string;
-    } | null
-  ): IMilestone | undefined {
+  private _makeMilestone(issue: GitHubIssueModel): IMilestone | undefined {
+    const milestone = issue.milestone as GitHubMilestoneModel | null;
+
     return milestone !== null
       ? {
           title: milestone.title,

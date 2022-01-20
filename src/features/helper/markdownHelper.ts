@@ -2,7 +2,7 @@
  * @description This is a modified version of the original code from https://github.com/microsoft/vscode-pull-request-github/blob/main/src/issues/util.ts
  */
 
-import * as marked from 'marked';
+import { marked } from 'marked';
 
 export class UglyMarkdownRenderer extends marked.Renderer {
   public code(code: string, language: string | undefined, _isEscaped: boolean): string {
