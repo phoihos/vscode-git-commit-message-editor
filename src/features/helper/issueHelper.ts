@@ -108,7 +108,7 @@ export function makeIssueMarkdown(
   // body
   let body = minifyMarkdown(issue.body);
   const bodyLengthLimit = _calcBodyLengthLimit(body);
-  body = body.length > bodyLengthLimit ? body.substr(0, bodyLengthLimit) + '...' : body;
+  body = body.length > bodyLengthLimit ? body.substring(0, bodyLengthLimit) + '...' : body;
   markdown.appendMarkdown(body);
 
   return markdown;

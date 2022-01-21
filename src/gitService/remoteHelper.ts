@@ -24,7 +24,7 @@ function _getHostName(authority: string): string {
 function _getOwnerName(path: string): string {
   let normalized = path.replace(/\\/g, '/');
   if (normalized.endsWith('/')) {
-    normalized = normalized.substr(0, normalized.length - 1);
+    normalized = normalized.substring(0, normalized.length - 1);
   }
 
   const fragments = normalized.split('/');
@@ -38,11 +38,11 @@ function _getOwnerName(path: string): string {
 function _getRepositoryName(path: string): string {
   let normalized = path.replace(/\\/g, '/');
   if (normalized.endsWith('/')) {
-    normalized = normalized.substr(0, normalized.length - 1);
+    normalized = normalized.substring(0, normalized.length - 1);
   }
 
   const lastIndex = normalized.lastIndexOf('/');
-  const lastSegment = normalized.substr(lastIndex + 1);
+  const lastSegment = normalized.substring(lastIndex + 1);
   if (lastSegment === '' || lastSegment === '/') {
     return '';
   }
