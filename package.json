@@ -24,6 +24,7 @@
   "keywords": [
     "git",
     "commit",
+    "message",
     "conventional-commits",
     "conventional-changelog",
     "commitizen",
