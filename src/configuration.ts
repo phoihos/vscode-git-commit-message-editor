@@ -2,27 +2,27 @@ import * as vscode from 'vscode';
 
 import * as vsceUtil from '@phoihos/vsce-util';
 
-export interface ISummaryScope {
+export interface SummaryScope {
   readonly scope: string;
   readonly description?: string;
 }
 
-export interface IConfiguration extends vsceUtil.IDisposable {
+export interface Configuration extends vsceUtil.DisposableLike {
   readonly keepAfterSave: boolean;
   readonly recentCommitsEnabled: boolean;
   readonly recentCommitsMaxItems: number;
   readonly completionEnabled: boolean;
-  readonly userScopes: ISummaryScope[];
+  readonly userScopes: SummaryScope[];
   readonly logScopesEnabled: boolean;
   readonly logScopesMaxCommits: number;
   readonly issuesPageSize: number;
   readonly commitsPageSize: number;
   readonly hoverEnabled: boolean;
 
-  updateUserScopes(userScopes: ISummaryScope[]): Thenable<void>;
+  updateUserScopes(userScopes: SummaryScope[]): Thenable<void>;
 }
 
-class Configuration extends vsceUtil.Disposable implements IConfiguration {
+class ConfigurationImpl extends vsceUtil.Disposable implements Configuration {
   private readonly _sectionPrefix = 'gitCommitMessageEditor.';
 
   private readonly _cache = new Map<string, any>();
@@ -53,8 +53,8 @@ class Configuration extends vsceUtil.Disposable implements IConfiguration {
     return this._getConfigValue<boolean>('intelliSense.completion.enabled', true);
   }
 
-  get userScopes(): ISummaryScope[] {
-    return this._getConfigValue<ISummaryScope[]>('intelliSense.completion.scopes', []);
+  get userScopes(): SummaryScope[] {
+    return this._getConfigValue<SummaryScope[]>('intelliSense.completion.scopes', []);
   }
 
   get logScopesEnabled(): boolean {
@@ -77,7 +77,7 @@ class Configuration extends vsceUtil.Disposable implements IConfiguration {
     return this._getConfigValue<boolean>('intelliSense.hover.enabled', true);
   }
 
-  public updateUserScopes(userScopes: ISummaryScope[]): Thenable<void> {
+  public updateUserScopes(userScopes: SummaryScope[]): Thenable<void> {
     return this._getConfig('intelliSense.completion').update(
       'scopes',
       userScopes,
@@ -114,6 +114,6 @@ class Configuration extends vsceUtil.Disposable implements IConfiguration {
   }
 }
 
-export default function getConfiguration(): IConfiguration {
-  return new Configuration();
+export default function getConfiguration(): Configuration {
+  return new ConfigurationImpl();
 }

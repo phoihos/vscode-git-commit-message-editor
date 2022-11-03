@@ -1,8 +1,8 @@
 import * as vscode from 'vscode';
 import { TextEncoder, TextDecoder } from 'util';
 
-import { IGitService } from '../../gitService';
-import { IConfiguration } from '../../configuration';
+import { GitService } from '../../gitService';
+import { Configuration } from '../../configuration';
 
 import * as vsceUtil from '@phoihos/vsce-util';
 import { OpenEditorCommand } from './openEditorCommand';
@@ -17,10 +17,10 @@ export class CommitEditmsgFileSystemProvider
 
   private readonly _onDidChangeFile = new vscode.EventEmitter<vscode.FileChangeEvent[]>();
 
-  private readonly _git: IGitService;
-  private readonly _config: IConfiguration;
+  private readonly _git: GitService;
+  private readonly _config: Configuration;
 
-  constructor(git: IGitService, config: IConfiguration) {
+  constructor(git: GitService, config: Configuration) {
     super();
 
     const command = new OpenEditorCommand(this._scheme, git);

@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 
-import { IGitService } from '../../gitService';
+import { GitService } from '../../gitService';
 
 import { EventListenerBase } from '@phoihos/vsce-util';
 import { TextDocumentParserProxy, ELineType, ETokenType } from './textDocumentParserProxy';
@@ -17,14 +17,14 @@ export class TextDocumentEventListener extends EventListenerBase {
 
   private readonly _eventCallbackMap = new Map<string, EventCallback>();
 
-  private readonly _git: IGitService;
+  private readonly _git: GitService;
 
   constructor(
     selector: string,
     formatSeparatorCommandId: string,
     triggerSuggestCommandId: string,
     parserProxy: TextDocumentParserProxy,
-    git: IGitService
+    git: GitService
   ) {
     super();
 

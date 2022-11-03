@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 
-import { IConfiguration } from '../../configuration';
+import { Configuration } from '../../configuration';
 
 import * as vsceUtil from '@phoihos/vsce-util';
 import {
@@ -20,13 +20,13 @@ export class SummaryCompletionItemProvider
   private readonly _itemManager: SummaryCompletionItemManager;
   private readonly _parserProxy: TextDocumentParserProxy;
 
-  private readonly _config: IConfiguration;
+  private readonly _config: Configuration;
 
   constructor(
     selector: string,
     itemManager: SummaryCompletionItemManager,
     parserProxy: TextDocumentParserProxy,
-    config: IConfiguration
+    config: Configuration
   ) {
     super();
 

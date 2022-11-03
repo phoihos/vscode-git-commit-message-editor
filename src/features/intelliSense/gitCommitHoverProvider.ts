@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 
-import { IGitService } from '../../gitService';
-import { IConfiguration } from '../../configuration';
+import { GitService } from '../../gitService';
+import { Configuration } from '../../configuration';
 
 import { makeIssueMarkdown } from '../helper/issueHelper';
 import { makeCommitMarkdown } from '../helper/commitHelper';
@@ -12,9 +12,9 @@ import { parseSummary, parseFooter } from './textDocumentParserProxy';
 import constants from './constants';
 
 class SummaryHoverProvider {
-  private readonly _config: IConfiguration;
+  private readonly _config: Configuration;
 
-  constructor(config: IConfiguration) {
+  constructor(config: Configuration) {
     this._config = config;
   }
 
@@ -64,9 +64,9 @@ class SummaryHoverProvider {
 }
 
 class FooterHoverProvider {
-  private readonly _git: IGitService;
+  private readonly _git: GitService;
 
-  constructor(git: IGitService) {
+  constructor(git: GitService) {
     this._git = git;
   }
 
@@ -126,13 +126,13 @@ export class GitCommitHoverProvider extends vsceUtil.Disposable implements vscod
 
   private readonly _parserProxy: TextDocumentParserProxy;
 
-  private readonly _config: IConfiguration;
+  private readonly _config: Configuration;
 
   constructor(
     selector: string,
     parserProxy: TextDocumentParserProxy,
-    git: IGitService,
-    config: IConfiguration
+    git: GitService,
+    config: Configuration
   ) {
     super();
 

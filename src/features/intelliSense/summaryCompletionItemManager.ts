@@ -1,8 +1,8 @@
 import * as vscode from 'vscode';
 
-import { IGitService } from '../../gitService';
-import { IGitCommit } from '../../gitService/interface';
-import { IConfiguration, ISummaryScope } from '../../configuration';
+import { GitService } from '../../gitService';
+import { GitCommit } from '../../gitService/interface';
+import { Configuration, SummaryScope } from '../../configuration';
 
 import { SUMMARY_SYNTAX_REGEX, SUMMARY_TOKEN_SCOPE_REGEX, EOL_REGEX } from '../parser/syntaxRegex';
 
@@ -18,10 +18,10 @@ export class SummaryCompletionItemManager {
   private readonly _emojiItems: EmojiCompletionItem[];
   private readonly _defaultScopeItems: TokenCompletionItem[];
 
-  private readonly _git: IGitService;
-  private readonly _config: IConfiguration;
+  private readonly _git: GitService;
+  private readonly _config: Configuration;
 
-  constructor(createNewScopeCommandId: string, git: IGitService, config: IConfiguration) {
+  constructor(createNewScopeCommandId: string, git: GitService, config: Configuration) {
     //#region Type completion items
     this.typeItems = constants.summaryTypes.map((e) => {
       const item = new TokenCompletionItem(e.type);
@@ -80,10 +80,10 @@ export class SummaryCompletionItemManager {
     const logScopesLoading = this._config.logScopesEnabled
       ? this._git
           .getCommits(uri, this._config.logScopesMaxCommits)
-          .then((commits): ISummaryScope[] => {
+          .then((commits): SummaryScope[] => {
             return this._grepLogScopes(commits);
           })
-      : Promise.resolve<ISummaryScope[]>([]);
+      : Promise.resolve<SummaryScope[]>([]);
 
     return logScopesLoading.then((logScopes): TokenCompletionItem[] => {
       return this._makeScopeItems(logScopes, scopeRange);
@@ -120,8 +120,8 @@ export class SummaryCompletionItemManager {
     return [item];
   }
 
-  private _grepLogScopes(commits: IGitCommit[]): ISummaryScope[] {
-    const logScopes: ISummaryScope[] = [];
+  private _grepLogScopes(commits: GitCommit[]): SummaryScope[] {
+    const logScopes: SummaryScope[] = [];
 
     commits.forEach((e) => {
       const lines = e.message.split(EOL_REGEX);
@@ -143,7 +143,7 @@ export class SummaryCompletionItemManager {
   }
 
   private _makeScopeItems(
-    logScopes: ISummaryScope[],
+    logScopes: SummaryScope[],
     scopeRange: vscode.Range | undefined
   ): TokenCompletionItem[] {
     const items = this._defaultScopeItems.slice(0);

@@ -1,6 +1,6 @@
 import { components } from '@octokit/openapi-types';
 
-import { IGitRepository, IGitRemote, IGitIssue, ILabel, IMilestone } from '../interface';
+import { GitRepository, GitRemote, GitIssue, Label, Milestone } from '../interface';
 
 export type GitHubIssueModel = components['schemas']['issue'];
 
@@ -11,7 +11,7 @@ type GitHubLabelModel = {
 
 type GitHubMilestoneModel = NonNullable<components['schemas']['nullable-milestone']>;
 
-export class GitHubIssue implements IGitIssue {
+export class GitHubIssue implements GitIssue {
   get id(): number {
     return this._issue.id;
   }
@@ -36,30 +36,30 @@ export class GitHubIssue implements IGitIssue {
   get state(): string {
     return this._issue.state;
   }
-  get labels(): ILabel[] {
+  get labels(): Label[] {
     return this._labels;
   }
-  get milestone(): IMilestone | undefined {
+  get milestone(): Milestone | undefined {
     return this._milestone;
   }
   get isPR(): boolean {
     return this._issue.pull_request !== undefined;
   }
-  get repository(): IGitRepository {
+  get repository(): GitRepository {
     return this._repository;
   }
-  get remote(): IGitRemote {
+  get remote(): GitRemote {
     return this._remote;
   }
 
-  private readonly _repository: IGitRepository;
-  private readonly _remote: IGitRemote;
+  private readonly _repository: GitRepository;
+  private readonly _remote: GitRemote;
 
   private readonly _issue: GitHubIssueModel;
-  private readonly _labels: ILabel[];
-  private readonly _milestone: IMilestone | undefined;
+  private readonly _labels: Label[];
+  private readonly _milestone: Milestone | undefined;
 
-  constructor(repository: IGitRepository, remote: IGitRemote, issue: GitHubIssueModel) {
+  constructor(repository: GitRepository, remote: GitRemote, issue: GitHubIssueModel) {
     this._repository = repository;
     this._remote = remote;
 
@@ -68,7 +68,7 @@ export class GitHubIssue implements IGitIssue {
     this._milestone = this._makeMilestone(issue);
   }
 
-  private _makeLabels(issue: GitHubIssueModel, remote: IGitRemote): ILabel[] {
+  private _makeLabels(issue: GitHubIssueModel, remote: GitRemote): Label[] {
     const labels = issue.labels.reduce<GitHubLabelModel[]>((acc, e) => {
       if (typeof e === 'string') {
         acc.push({ name: e, color: '#ffffff' });
@@ -81,7 +81,7 @@ export class GitHubIssue implements IGitIssue {
     }, []);
     const ownerRepo = `${remote.owner}/${remote.repo}`;
 
-    return labels.map((e): ILabel => {
+    return labels.map((e): Label => {
       return {
         name: e.name,
         color: e.color,
@@ -90,7 +90,7 @@ export class GitHubIssue implements IGitIssue {
     });
   }
 
-  private _makeMilestone(issue: GitHubIssueModel): IMilestone | undefined {
+  private _makeMilestone(issue: GitHubIssueModel): Milestone | undefined {
     const milestone = issue.milestone as GitHubMilestoneModel | null;
 
     return milestone !== null
@@ -105,10 +105,10 @@ export class GitHubIssue implements IGitIssue {
 }
 
 export function translateIssues(
-  repository: IGitRepository,
-  remote: IGitRemote,
+  repository: GitRepository,
+  remote: GitRemote,
   issues: GitHubIssueModel[]
-): IGitIssue[] {
+): GitIssue[] {
   return issues.map((e) => {
     return new GitHubIssue(repository, remote, e);
   });

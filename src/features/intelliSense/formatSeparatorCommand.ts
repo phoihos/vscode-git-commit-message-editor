@@ -1,10 +1,10 @@
 import * as vscode from 'vscode';
 
-import { ICommand } from '@phoihos/vsce-util';
+import { Command } from '@phoihos/vsce-util';
 
 const _TRAILING_TEXT_REGEX = /^:[: ]*/;
 
-export class FormatSeparatorCommand implements ICommand {
+export class FormatSeparatorCommand implements Command {
   public readonly id = 'gitCommitMessageEditor.intelliSense.command.formatSeparator';
 
   constructor() {}

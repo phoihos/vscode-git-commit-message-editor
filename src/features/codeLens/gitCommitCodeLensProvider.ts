@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 
-import { IGitService } from '../../gitService';
-import { IConfiguration } from '../../configuration';
+import { GitService } from '../../gitService';
+import { Configuration } from '../../configuration';
 
 import * as vsceUtil from '@phoihos/vsce-util';
 import { RecentCommitsResolver } from './recentCommitsResolver';
@@ -16,9 +16,9 @@ export class GitCommitCodeLensProvider
   private readonly _resolver: RecentCommitsResolver;
   private readonly _showRecentCommitsCommandId: string;
 
-  private readonly _config: IConfiguration;
+  private readonly _config: Configuration;
 
-  constructor(git: IGitService, config: IConfiguration) {
+  constructor(git: GitService, config: Configuration) {
     super();
 
     this._resolver = new RecentCommitsResolver(git, config);

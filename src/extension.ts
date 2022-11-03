@@ -5,8 +5,8 @@ import * as vscode from 'vscode';
 import vsceUtil from '@phoihos/vsce-util';
 import features from './features';
 
-import getGitService, { IGitService } from './gitService';
-import getConfiguration, { IConfiguration } from './configuration';
+import getGitService, { GitService } from './gitService';
+import getConfiguration, { Configuration } from './configuration';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -19,7 +19,7 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(git);
 }
 
-function registerProviders(git: IGitService, config: IConfiguration): vscode.Disposable {
+function registerProviders(git: GitService, config: Configuration): vscode.Disposable {
   const aggregateProviders = new vsceUtil.DisposableStore();
 
   aggregateProviders.add(new features.CommitEditmsgFileSystemProvider(git, config));

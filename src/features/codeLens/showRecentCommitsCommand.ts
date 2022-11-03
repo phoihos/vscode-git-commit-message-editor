@@ -1,9 +1,9 @@
 import * as vscode from 'vscode';
 
-import { ICommand } from '@phoihos/vsce-util';
-import { IRecentCommits, RecentCommitsResolver } from './recentCommitsResolver';
+import { Command } from '@phoihos/vsce-util';
+import { RecentCommits, RecentCommitsResolver } from './recentCommitsResolver';
 
-export class ShowRecentCommitsCommand implements ICommand {
+export class ShowRecentCommitsCommand implements Command {
   public readonly id = 'gitCommitMessageEditor.codeLens.command.showRecentCommits';
 
   private readonly _resolver: RecentCommitsResolver;
@@ -12,13 +12,13 @@ export class ShowRecentCommitsCommand implements ICommand {
     this._resolver = resolver;
   }
 
-  public async execute(recentCommits?: IRecentCommits): Promise<void> {
+  public async execute(recentCommits?: RecentCommits): Promise<void> {
     const editor = vscode.window.activeTextEditor;
     if (editor === undefined) return;
 
     if (recentCommits === undefined) {
-      recentCommits = await new Promise<IRecentCommits | undefined>(async (resolve) => {
-        let fulfilled: IRecentCommits | undefined = undefined;
+      recentCommits = await new Promise<RecentCommits | undefined>(async (resolve) => {
+        let fulfilled: RecentCommits | undefined = undefined;
 
         const loading = vscode.window.createQuickPick();
         loading.placeholder = 'Loading...';

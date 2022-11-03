@@ -1,32 +1,32 @@
 import * as vscode from 'vscode';
 
-import { IGitService } from '../../gitService';
-import { IGitCommit } from '../../gitService/interface';
-import { IConfiguration } from '../../configuration';
+import { GitService } from '../../gitService';
+import { GitCommit } from '../../gitService/interface';
+import { Configuration } from '../../configuration';
 
 import { findSummaryLine } from '../parser/textDocumentParser';
 import { EOL_REGEX } from '../parser/syntaxRegex';
 import { makeCommitDescription } from '../helper/commitHelper';
 
-export interface ICommitPickItem extends vscode.QuickPickItem {
+export interface CommitPickItem extends vscode.QuickPickItem {
   readonly commitMessage: string;
 }
 
-export interface IRecentCommits {
-  readonly pickItems: ICommitPickItem[];
+export interface RecentCommits {
+  readonly pickItems: CommitPickItem[];
   readonly insertRange: vscode.Range;
 }
 
 export class RecentCommitsResolver {
-  private readonly _git: IGitService;
-  private readonly _config: IConfiguration;
+  private readonly _git: GitService;
+  private readonly _config: Configuration;
 
-  constructor(git: IGitService, config: IConfiguration) {
+  constructor(git: GitService, config: Configuration) {
     this._git = git;
     this._config = config;
   }
 
-  public resolveRecentCommits(document: vscode.TextDocument): Thenable<IRecentCommits | undefined> {
+  public resolveRecentCommits(document: vscode.TextDocument): Thenable<RecentCommits | undefined> {
     const summaryLineNumber = findSummaryLine(document);
     if (summaryLineNumber < 0) return Promise.resolve(undefined);
 
@@ -35,7 +35,7 @@ export class RecentCommitsResolver {
 
     return this._git
       .getCommits(document.uri, this._config.recentCommitsMaxItems)
-      .then((commits): IRecentCommits => {
+      .then((commits): RecentCommits => {
         return {
           pickItems: commits.map((e) => this._makePickItem(e)),
           insertRange: summaryLine.range
@@ -48,7 +48,7 @@ export class RecentCommitsResolver {
       });
   }
 
-  private _makePickItem(commit: IGitCommit): ICommitPickItem {
+  private _makePickItem(commit: GitCommit): CommitPickItem {
     const lines = commit.message.split(EOL_REGEX);
 
     return {

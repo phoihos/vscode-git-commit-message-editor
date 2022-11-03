@@ -1,12 +1,12 @@
 import * as vscode from 'vscode';
 
-import { IGitCommit } from '../../gitService/interface';
+import { GitCommit } from '../../gitService/interface';
 
 function _isNonEmptyString(value: any): value is string {
   return typeof value === 'string' && value.length > 0;
 }
 
-export function makeCommitDescription(commit: IGitCommit, verbose: boolean = false): string {
+export function makeCommitDescription(commit: GitCommit, verbose: boolean = false): string {
   let desc = [commit.authorName, commit.commitTimeAgo].filter(_isNonEmptyString).join(', ');
 
   if (verbose) {
@@ -17,7 +17,7 @@ export function makeCommitDescription(commit: IGitCommit, verbose: boolean = fal
 }
 
 export function makeCommitMarkdown(
-  commit: IGitCommit,
+  commit: GitCommit,
   options?: { includeDesc?: 'terse' | 'verbose' }
 ): vscode.MarkdownString {
   const markdown: vscode.MarkdownString = new vscode.MarkdownString(undefined, true);

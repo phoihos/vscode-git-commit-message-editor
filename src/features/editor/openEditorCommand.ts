@@ -1,16 +1,16 @@
 import * as vscode from 'vscode';
 
-import { IGitService } from '../../gitService';
+import { GitService } from '../../gitService';
 
-import { ICommand } from '@phoihos/vsce-util';
+import { Command } from '@phoihos/vsce-util';
 
-export class OpenEditorCommand implements ICommand {
+export class OpenEditorCommand implements Command {
   public readonly id = 'gitCommitMessageEditor.editor.command.openEditor';
 
   private readonly _scheme: string;
-  private readonly _git: IGitService;
+  private readonly _git: GitService;
 
-  constructor(scheme: string, git: IGitService) {
+  constructor(scheme: string, git: GitService) {
     this._scheme = scheme;
     this._git = git;
   }

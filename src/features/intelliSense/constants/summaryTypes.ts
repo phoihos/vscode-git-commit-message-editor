@@ -1,4 +1,4 @@
-export interface ISummaryType {
+export interface SummaryType {
   readonly type: string;
   readonly title: string;
   readonly description: string;
@@ -9,8 +9,8 @@ export interface ISummaryType {
 /**
  * @see https://github.com/commitizen/conventional-commit-types/blob/master/index.json
  */
-export const summaryTypes: ISummaryType[] = (function () {
-  const summaryTypes: ISummaryType[] = [
+export const summaryTypes: SummaryType[] = (function () {
+  const summaryTypes: SummaryType[] = [
     {
       type: 'feat',
       title: '',
@@ -104,12 +104,12 @@ export const summaryTypes: ISummaryType[] = (function () {
     }
   ];
 
-  interface ICommitizenTypes {
-    [key: string]: Partial<ISummaryType>;
+  interface CommitizenTypes {
+    [key: string]: Partial<SummaryType>;
   }
-  const commitizenTypes = require('conventional-commit-types').types as ICommitizenTypes;
+  const commitizenTypes = require('conventional-commit-types').types as CommitizenTypes;
 
-  return summaryTypes.map((e): ISummaryType => {
+  return summaryTypes.map((e): SummaryType => {
     return { ...e, ...commitizenTypes[e.type] };
   });
 })();

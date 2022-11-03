@@ -1,36 +1,36 @@
-import { Repository as IGitRepository, Commit as IGitCommitBase } from './git';
+import { Repository as GitRepository, Commit as GitCommitBase } from './git';
 
 import * as vsceUtil from '@phoihos/vsce-util';
 
-export { IGitRepository };
+export { GitRepository };
 
-export interface IGitRemote {
+export interface GitRemote {
   readonly name: string;
   readonly host: string;
   readonly owner: string;
   readonly repo: string;
 }
 
-export interface IGitCommit extends IGitCommitBase {
+export interface GitCommit extends GitCommitBase {
   readonly hashShort: string;
   readonly authorTimeAgo?: string;
   readonly commitTimeAgo?: string;
 }
 
-export interface ILabel {
+export interface Label {
   readonly name: string;
   readonly color: string;
   readonly url: string;
 }
 
-export interface IMilestone {
+export interface Milestone {
   readonly title: string;
   readonly createdAt: string;
   readonly dueOn?: string;
   readonly url: string;
 }
 
-export interface IGitIssue {
+export interface GitIssue {
   readonly id: number;
   readonly number: number;
   readonly title: string;
@@ -40,42 +40,42 @@ export interface IGitIssue {
   readonly createdAt: string;
   readonly updatedAt: string;
   readonly state: string;
-  readonly labels: ILabel[];
-  readonly milestone?: IMilestone;
+  readonly labels: Label[];
+  readonly milestone?: Milestone;
   // readonly assignees?: IUser[]; // Not supported yet
   readonly isPR: boolean;
-  readonly repository: IGitRepository;
-  readonly remote: IGitRemote;
+  readonly repository: GitRepository;
+  readonly remote: GitRemote;
 }
 
-export interface IGitDataQuery {
-  readonly repository: IGitRepository;
+export interface GitDataQuery {
+  readonly repository: GitRepository;
 }
 
-export interface IGitCommitListQuery extends IGitDataQuery {
+export interface GitCommitListQuery extends GitDataQuery {
   readonly maxEntries?: number;
 }
 
-export interface IGitCommitQuery extends IGitDataQuery {
+export interface GitCommitQuery extends GitDataQuery {
   readonly hash: string;
 }
 
-export interface IGitIssueListQuery extends IGitDataQuery {
-  readonly remote: IGitRemote | undefined;
+export interface GitIssueListQuery extends GitDataQuery {
+  readonly remote: GitRemote | undefined;
   readonly pagination?: { pageSize: number; page: number };
 }
 
-export interface IGitIssueQuery extends IGitDataQuery {
-  readonly remote: IGitRemote | undefined;
+export interface GitIssueQuery extends GitDataQuery {
+  readonly remote: GitRemote | undefined;
   readonly number: number;
 }
 
-export interface IGitDataProvider extends vsceUtil.IDisposable {
+export interface GitDataProvider extends vsceUtil.DisposableLike {
   readonly host: string;
 
-  getCommits(query: IGitCommitListQuery): Promise<IGitCommit[]>;
-  getCommit(query: IGitCommitQuery): Promise<IGitCommit | undefined>;
-  getIssues(query: IGitIssueListQuery): Promise<IGitIssue[]>;
-  getIssue(query: IGitIssueQuery): Promise<IGitIssue | undefined>;
-  clearCache(query: IGitDataQuery): void;
+  getCommits(query: GitCommitListQuery): Promise<GitCommit[]>;
+  getCommit(query: GitCommitQuery): Promise<GitCommit | undefined>;
+  getIssues(query: GitIssueListQuery): Promise<GitIssue[]>;
+  getIssue(query: GitIssueQuery): Promise<GitIssue | undefined>;
+  clearCache(query: GitDataQuery): void;
 }

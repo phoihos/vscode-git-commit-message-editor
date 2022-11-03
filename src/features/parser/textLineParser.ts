@@ -18,7 +18,7 @@ export enum ETokenType {
   Desc = 3
 }
 
-export interface ITokens {
+export interface Tokens {
   readonly type: string;
   readonly scope: string;
   readonly desc: string;
@@ -26,7 +26,7 @@ export interface ITokens {
   readonly tokenTypeAt: ETokenType;
 }
 
-export function parseSummary(summary: string): ITokens {
+export function parseSummary(summary: string): Tokens {
   const tokens = {
     type: '',
     scope: '',
@@ -65,7 +65,7 @@ export function parseSummary(summary: string): ITokens {
   return tokens;
 }
 
-export function parseFooter(footer: string): ITokens {
+export function parseFooter(footer: string): Tokens {
   const tokens = {
     type: '',
     scope: '',

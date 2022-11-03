@@ -1,17 +1,17 @@
 import * as vscode from 'vscode';
 
-import { IGitRepository, IGitRemote, IGitDataProvider } from './interface';
+import { GitRepository, GitRemote, GitDataProvider } from './interface';
 
 import * as vsceUtil from '@phoihos/vsce-util';
 import getGitLocalDataProvider from './local/gitLocalDataProvider';
 import getGitHubDataProvider from './github/githubDataProvider';
 import getOriginRemote from './remoteHelper';
 
-export type GitDataProviderState = [IGitDataProvider, IGitRemote?];
+export type GitDataProviderState = [GitDataProvider, GitRemote?];
 
 export class GitDataProviderProvider extends vsceUtil.Disposable {
-  private readonly _dataProviders: IGitDataProvider[];
-  private readonly _fallbackProvider: IGitDataProvider;
+  private readonly _dataProviders: GitDataProvider[];
+  private readonly _fallbackProvider: GitDataProvider;
 
   private readonly _cache = new Map<string, GitDataProviderState>();
 
@@ -28,7 +28,7 @@ export class GitDataProviderProvider extends vsceUtil.Disposable {
     this.register(subscriptions);
   }
 
-  public getDataProvider(repository: IGitRepository, cacheKey: string): GitDataProviderState {
+  public getDataProvider(repository: GitRepository, cacheKey: string): GitDataProviderState {
     let dataProvider = this._cache.get(cacheKey);
     if (dataProvider === undefined) {
       dataProvider = this._resolveDataProvider(repository);
@@ -46,7 +46,7 @@ export class GitDataProviderProvider extends vsceUtil.Disposable {
     this._cache.delete(cacheKey);
   }
 
-  private _resolveDataProvider(repository: IGitRepository): GitDataProviderState | undefined {
+  private _resolveDataProvider(repository: GitRepository): GitDataProviderState | undefined {
     const remote = getOriginRemote(repository);
     if (remote === undefined) return undefined;
 

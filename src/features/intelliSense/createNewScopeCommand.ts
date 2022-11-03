@@ -1,18 +1,18 @@
 import * as vscode from 'vscode';
 
-import { ISummaryScope, IConfiguration } from '../../configuration';
+import { SummaryScope, Configuration } from '../../configuration';
 
 import { SUMMARY_TOKEN_SCOPE_REGEX } from '../parser/syntaxRegex';
 
-import { ICommand } from '@phoihos/vsce-util';
+import { Command } from '@phoihos/vsce-util';
 
-export class CreateNewScopeCommand implements ICommand {
+export class CreateNewScopeCommand implements Command {
   public readonly id = 'gitCommitMessageEditor.intelliSense.command.createNewScope';
 
   private readonly _scopeRangeRegex: RegExp;
-  private readonly _config: IConfiguration;
+  private readonly _config: Configuration;
 
-  constructor(scopeRangeRegex: RegExp, config: IConfiguration) {
+  constructor(scopeRangeRegex: RegExp, config: Configuration) {
     this._scopeRangeRegex = scopeRangeRegex;
     this._config = config;
   }
@@ -44,7 +44,7 @@ export class CreateNewScopeCommand implements ICommand {
     await editor.insertSnippet(new vscode.SnippetString(scope), insertRange);
   }
 
-  private _getScopeInputBoxOptions(scopes: ISummaryScope[]): vscode.InputBoxOptions {
+  private _getScopeInputBoxOptions(scopes: SummaryScope[]): vscode.InputBoxOptions {
     const lowerScopes = scopes.map((e) => e.scope.toLowerCase());
 
     return {

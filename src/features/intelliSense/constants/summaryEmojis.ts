@@ -1,4 +1,4 @@
-export interface ISummaryEmoji {
+export interface SummaryEmoji {
   readonly emoji: string;
   readonly code: string;
   readonly description: string;
@@ -7,4 +7,4 @@ export interface ISummaryEmoji {
 /**
  * @see https://github.com/carloscuesta/gitmoji/blob/master/src/data/gitmojis.json
  */
-export const summaryEmojis = require('gitmojis').gitmojis as ISummaryEmoji[];
+export const summaryEmojis = require('gitmojis').gitmojis as SummaryEmoji[];

@@ -2,14 +2,14 @@ import * as vscode from 'vscode';
 import { Octokit as GitHubAPI, RestEndpointMethodTypes } from '@octokit/rest';
 import { RequestError as GitHubRequestError } from '@octokit/request-error';
 
-import { IGitRepository, IGitCommit, IGitIssue } from '../interface';
+import { GitRepository, GitCommit, GitIssue } from '../interface';
 import {
-  IGitDataProvider,
-  IGitDataQuery,
-  IGitCommitListQuery,
-  IGitCommitQuery,
-  IGitIssueListQuery,
-  IGitIssueQuery
+  GitDataProvider,
+  GitDataQuery,
+  GitCommitListQuery,
+  GitCommitQuery,
+  GitIssueListQuery,
+  GitIssueQuery
 } from '../interface';
 
 import * as vsceUtil from '@phoihos/vsce-util';
@@ -23,16 +23,16 @@ const _GITHUB_AUTH_PROVIDER_ID = 'github';
 // https://developer.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/
 const _SCOPES = ['read:user', 'user:email', 'repo'];
 
-class GitHubDataProvider extends vsceUtil.Disposable implements IGitDataProvider {
+class GitHubDataProvider extends vsceUtil.Disposable implements GitDataProvider {
   public readonly host = 'github.com';
 
-  private readonly _fallbackProvider: IGitDataProvider;
+  private readonly _fallbackProvider: GitDataProvider;
 
   private _authedAPI: GitHubAPI | undefined = undefined;
   private readonly _fallbackAPI = new GitHubAPI();
   private readonly _cache = new Map<string, Promise<any[]>>();
 
-  constructor(fallbackProvider: IGitDataProvider) {
+  constructor(fallbackProvider: GitDataProvider) {
     super();
 
     this._fallbackProvider = fallbackProvider;
@@ -46,15 +46,15 @@ class GitHubDataProvider extends vsceUtil.Disposable implements IGitDataProvider
     return (await this._ensureAPI()) ?? this._fallbackAPI;
   }
 
-  public getCommits(query: IGitCommitListQuery): Promise<IGitCommit[]> {
+  public getCommits(query: GitCommitListQuery): Promise<GitCommit[]> {
     return this._fallbackProvider.getCommits(query);
   }
 
-  public getCommit(query: IGitCommitQuery): Promise<IGitCommit | undefined> {
+  public getCommit(query: GitCommitQuery): Promise<GitCommit | undefined> {
     return this._fallbackProvider.getCommit(query);
   }
 
-  public async getIssues(query: IGitIssueListQuery): Promise<IGitIssue[]> {
+  public async getIssues(query: GitIssueListQuery): Promise<GitIssue[]> {
     const remote = query.remote;
     if (remote === undefined) {
       return this._fallbackProvider.getIssues(query);
@@ -66,7 +66,7 @@ class GitHubDataProvider extends vsceUtil.Disposable implements IGitDataProvider
 
     const githubAPI = await this.getAPI();
 
-    return this._getOrFetch<IGitIssue>(repository, queryString, () => {
+    return this._getOrFetch<GitIssue>(repository, queryString, () => {
       // see: https://octokit.github.io/rest.js/v18#issues-list-for-repo
       // see: https://docs.github.com/en/rest/reference/issues#list-repository-issues
       const params: GitHubIssueListParams = {
@@ -107,13 +107,13 @@ class GitHubDataProvider extends vsceUtil.Disposable implements IGitDataProvider
           }
           throw err;
         })
-        .then((issues): IGitIssue[] => {
+        .then((issues): GitIssue[] => {
           return translateIssues(repository, remote, issues);
         });
     });
   }
 
-  public async getIssue(query: IGitIssueQuery): Promise<IGitIssue | undefined> {
+  public async getIssue(query: GitIssueQuery): Promise<GitIssue | undefined> {
     const remote = query.remote;
     if (remote === undefined) {
       return this._fallbackProvider.getIssue(query);
@@ -128,7 +128,7 @@ class GitHubDataProvider extends vsceUtil.Disposable implements IGitDataProvider
       if (superKey.includes(key)) {
         let value = this._cache.get(superKey);
         if (value !== undefined) {
-          const issues: IGitIssue[] = await value;
+          const issues: GitIssue[] = await value;
           const issue = issues.find((e) => e.number === issueNumber);
           if (issue !== undefined) return issue;
         }
@@ -168,12 +168,12 @@ class GitHubDataProvider extends vsceUtil.Disposable implements IGitDataProvider
         }
         throw err;
       })
-      .then((issue): IGitIssue | undefined => {
+      .then((issue): GitIssue | undefined => {
         return issue !== undefined ? translateIssues(repository, remote, [issue])[0] : undefined;
       });
   }
 
-  public clearCache(query: IGitDataQuery): void {
+  public clearCache(query: GitDataQuery): void {
     const key = query.repository.rootUri.path;
 
     for (const superKey of this._cache.keys()) {
@@ -186,7 +186,7 @@ class GitHubDataProvider extends vsceUtil.Disposable implements IGitDataProvider
   }
 
   private _getOrFetch<T>(
-    repository: IGitRepository,
+    repository: GitRepository,
     query: string,
     fetch: () => Promise<T[]>
   ): Promise<T[]> {
@@ -240,7 +240,7 @@ class GitHubDataProvider extends vsceUtil.Disposable implements IGitDataProvider
 }
 
 export default function getGitHubDataProvider(
-  fallbackDataProvider: IGitDataProvider
-): IGitDataProvider {
+  fallbackDataProvider: GitDataProvider
+): GitDataProvider {
   return new GitHubDataProvider(fallbackDataProvider);
 }

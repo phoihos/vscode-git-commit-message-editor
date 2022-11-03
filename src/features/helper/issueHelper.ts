@@ -4,7 +4,7 @@
 
 import * as vscode from 'vscode';
 
-import { IGitIssue } from '../../gitService/interface';
+import { GitIssue } from '../../gitService/interface';
 
 import { minifyMarkdown } from './markdownHelper';
 
@@ -68,7 +68,7 @@ function _calcBodyLengthLimit(body: string): number {
 }
 
 export function makeIssueMarkdown(
-  issue: IGitIssue,
+  issue: GitIssue,
   options?: { includeTitle?: boolean }
 ): vscode.MarkdownString {
   const markdown: vscode.MarkdownString = new vscode.MarkdownString(undefined, true);

@@ -4,7 +4,7 @@
 
 import * as vscode from 'vscode';
 
-import { IGitRepository, IGitRemote } from './interface';
+import { GitRepository, GitRemote } from './interface';
 
 const HTTP_AUTH_REGEX = /^(?:.*:?@)?([^:]*)(?::.*)?$/; // <username>:<password>@<authority>:<port>
 
@@ -53,7 +53,7 @@ function _getRepositoryName(path: string): string {
 const URL_SCHEME_REGEX = /^([A-Za-z0-9+.-]+):\/\//; // <protocol>://
 const SSH_URL_REGEX = /^(?:([^@:]+)@)?([^:/]+):?(.+)$/; // <ssh-info>@<hostname>:<repo-path>
 
-function _parseSshUrl(name: string, url: string): IGitRemote | undefined {
+function _parseSshUrl(name: string, url: string): GitRemote | undefined {
   const urlSchemeMatch = URL_SCHEME_REGEX.exec(url);
   if (urlSchemeMatch !== null) {
     const fullSchemePrefix = urlSchemeMatch[0];
@@ -68,7 +68,7 @@ function _parseSshUrl(name: string, url: string): IGitRemote | undefined {
   if (sshUrlMatch === null) return undefined;
 
   const [, , hostName, path] = sshUrlMatch;
-  const remote: IGitRemote = {
+  const remote: GitRemote = {
     name,
     host: hostName.toLocaleLowerCase(),
     owner: _getOwnerName(path),
@@ -78,9 +78,9 @@ function _parseSshUrl(name: string, url: string): IGitRemote | undefined {
   return remote.host.length > 0 ? remote : undefined;
 }
 
-function _parseHttpUrl(name: string, url: string): IGitRemote | undefined {
+function _parseHttpUrl(name: string, url: string): GitRemote | undefined {
   const uri = vscode.Uri.parse(url);
-  const remote: IGitRemote = {
+  const remote: GitRemote = {
     name,
     host: _getHostName(uri.authority),
     owner: _getOwnerName(uri.path),
@@ -90,13 +90,13 @@ function _parseHttpUrl(name: string, url: string): IGitRemote | undefined {
   return remote.host.length > 0 ? remote : undefined;
 }
 
-function _parseRemoteUrl(name: string, url: string): IGitRemote | undefined {
+function _parseRemoteUrl(name: string, url: string): GitRemote | undefined {
   if (url.length === 0) return undefined;
 
   return _parseSshUrl(name, url) ?? _parseHttpUrl(name, url);
 }
 
-export default function getOriginRemote(repository: IGitRepository): IGitRemote | undefined {
+export default function getOriginRemote(repository: GitRepository): GitRemote | undefined {
   const remoteName = repository.state.HEAD?.upstream?.remote.toLowerCase() ?? 'origin';
 
   const remote = repository.state.remotes.find((e) => e.name.toLowerCase() === remoteName);

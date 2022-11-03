@@ -1,7 +1,7 @@
-import { Commit as IGitCommitBase } from '../git';
-import { IGitCommit } from '../interface';
+import { Commit as GitCommitBase } from '../git';
+import { GitCommit } from '../interface';
 
-export { IGitCommitBase };
+export { GitCommitBase };
 
 const _epochs: { label: string; seconds: number; article?: string }[] = [
   { label: 'year', seconds: 31536000 },
@@ -25,8 +25,8 @@ function _convertDateToTimeAgo(date: Date | undefined): string | undefined {
   return time + ' ago';
 }
 
-export function extendCommits(commits: IGitCommitBase[]): IGitCommit[] {
-  return commits.map((e): IGitCommit => {
+export function extendCommits(commits: GitCommitBase[]): GitCommit[] {
+  return commits.map((e): GitCommit => {
     return {
       ...e,
       hashShort: e.hash.substring(0, 7), // short hash (7-digit)

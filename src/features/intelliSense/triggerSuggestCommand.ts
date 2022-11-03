@@ -1,8 +1,8 @@
 import * as vscode from 'vscode';
 
-import { ICommand } from '@phoihos/vsce-util';
+import { Command } from '@phoihos/vsce-util';
 
-export class TriggerSuggestCommand implements ICommand {
+export class TriggerSuggestCommand implements Command {
   public readonly id = 'gitCommitMessageEditor.intelliSense.command.triggerSuggest';
 
   constructor() {}

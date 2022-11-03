@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 
-import { IGitService } from '../../gitService';
-import { IConfiguration } from '../../configuration';
+import { GitService } from '../../gitService';
+import { Configuration } from '../../configuration';
 
 import * as vsceUtil from '@phoihos/vsce-util';
 import { CreateNewScopeCommand } from './createNewScopeCommand';
@@ -20,7 +20,7 @@ import { GitCommitHoverProvider } from './gitCommitHoverProvider';
 export class GitCommitIntelliSenseProvider extends vsceUtil.Disposable {
   private readonly _selector = 'git-commit';
 
-  constructor(git: IGitService, config: IConfiguration) {
+  constructor(git: GitService, config: Configuration) {
     super();
 
     const createNewScopeCommand = new CreateNewScopeCommand(SCOPE_RANGE_REGEX, config);

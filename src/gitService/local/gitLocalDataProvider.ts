@@ -1,40 +1,40 @@
-import { IGitRepository, IGitCommit, IGitIssue } from '../interface';
+import { GitRepository, GitCommit, GitIssue } from '../interface';
 import {
-  IGitDataProvider,
-  IGitDataQuery,
-  IGitCommitListQuery,
-  IGitCommitQuery,
-  IGitIssueListQuery,
-  IGitIssueQuery
+  GitDataProvider,
+  GitDataQuery,
+  GitCommitListQuery,
+  GitCommitQuery,
+  GitIssueListQuery,
+  GitIssueQuery
 } from '../interface';
 
-import { IGitCommitBase, extendCommits } from './gitLocalCommit';
+import { GitCommitBase, extendCommits } from './gitLocalCommit';
 
-class GitLocalDataProvider implements IGitDataProvider {
+class GitLocalDataProvider implements GitDataProvider {
   public readonly host = '';
 
   private readonly _cache = new Map<string, Promise<any[]>>();
 
-  public getCommits(query: IGitCommitListQuery): Promise<IGitCommit[]> {
+  public getCommits(query: GitCommitListQuery): Promise<GitCommit[]> {
     const { repository, maxEntries } = query;
     const queryString = `commits?count=${maxEntries}`;
 
     return this._getOrFetch(repository, queryString, () => {
       return repository
         .log({ maxEntries })
-        .catch((err): IGitCommitBase[] => {
+        .catch((err): GitCommitBase[] => {
           if (/your current branch '.+' does not have any commits yet/.test(err.stderr || '')) {
             return [];
           }
           throw err;
         })
-        .then((commits): IGitCommit[] => {
+        .then((commits): GitCommit[] => {
           return extendCommits(commits);
         });
     });
   }
 
-  public async getCommit(query: IGitCommitQuery): Promise<IGitCommit | undefined> {
+  public async getCommit(query: GitCommitQuery): Promise<GitCommit | undefined> {
     const { repository, hash } = query;
 
     const key = repository.rootUri.path + '/commits';
@@ -43,7 +43,7 @@ class GitLocalDataProvider implements IGitDataProvider {
       if (superKey.includes(key)) {
         let value = this._cache.get(superKey);
         if (value !== undefined) {
-          const commits: IGitCommit[] = await value;
+          const commits: GitCommit[] = await value;
           const commit = commits.find((e) => e.hashShort === hash || e.hash === hash);
           if (commit !== undefined) return commit;
         }
@@ -58,20 +58,20 @@ class GitLocalDataProvider implements IGitDataProvider {
         }
         throw err;
       })
-      .then((commit): IGitCommit | undefined => {
+      .then((commit): GitCommit | undefined => {
         return commit !== undefined ? extendCommits([commit])[0] : undefined;
       });
   }
 
-  public getIssues(_query: IGitIssueListQuery): Promise<IGitIssue[]> {
+  public getIssues(_query: GitIssueListQuery): Promise<GitIssue[]> {
     return Promise.resolve([]);
   }
 
-  public getIssue(_query: IGitIssueQuery): Promise<IGitIssue | undefined> {
+  public getIssue(_query: GitIssueQuery): Promise<GitIssue | undefined> {
     return Promise.resolve(undefined);
   }
 
-  public clearCache(query: IGitDataQuery): void {
+  public clearCache(query: GitDataQuery): void {
     const key = query.repository.rootUri.path;
 
     for (const superKey of this._cache.keys()) {
@@ -84,7 +84,7 @@ class GitLocalDataProvider implements IGitDataProvider {
   public dispose(): void {}
 
   private _getOrFetch<T>(
-    repository: IGitRepository,
+    repository: GitRepository,
     query: string,
     fetch: () => Promise<T[]>
   ): Promise<T[]> {
@@ -100,6 +100,6 @@ class GitLocalDataProvider implements IGitDataProvider {
   }
 }
 
-export default function getGitLocalDataProvider(): IGitDataProvider {
+export default function getGitLocalDataProvider(): GitDataProvider {
   return new GitLocalDataProvider();
 }

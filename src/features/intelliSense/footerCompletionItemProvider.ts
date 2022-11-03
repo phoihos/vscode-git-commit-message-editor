@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 
-import { IConfiguration } from '../../configuration';
+import { Configuration } from '../../configuration';
 import { makeIssueMarkdown } from '../helper/issueHelper';
 
 import * as vsceUtil from '@phoihos/vsce-util';
@@ -16,13 +16,13 @@ export class FooterCompletionItemProvider
   private readonly _itemManager: FooterCompletionItemManager;
   private readonly _parserProxy: TextDocumentParserProxy;
 
-  private readonly _config: IConfiguration;
+  private readonly _config: Configuration;
 
   constructor(
     selector: string,
     itemManager: FooterCompletionItemManager,
     parserProxy: TextDocumentParserProxy,
-    config: IConfiguration
+    config: Configuration
   ) {
     super();
 

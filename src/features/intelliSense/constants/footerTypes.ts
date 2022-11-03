@@ -1,12 +1,12 @@
-import { ISummaryType } from './summaryTypes';
+import { SummaryType } from './summaryTypes';
 
-export interface IFooterType extends ISummaryType {
+export interface FooterType extends SummaryType {
   readonly separator: string;
   readonly regex?: string;
   readonly descType?: 'issue' | 'commit';
 }
 
-export const footerTypes: IFooterType[] = [
+export const footerTypes: FooterType[] = [
   {
     type: 'Closes',
     title: 'Referencing issues',

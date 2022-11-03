@@ -1,8 +1,8 @@
 import * as vscode from 'vscode';
 
-import { IGitService } from '../../gitService';
-import { IGitIssue } from '../../gitService/interface';
-import { IConfiguration } from '../../configuration';
+import { GitService } from '../../gitService';
+import { GitIssue } from '../../gitService/interface';
+import { Configuration } from '../../configuration';
 
 import { makeCommitDescription, makeCommitMarkdown } from '../helper/commitHelper';
 
@@ -10,9 +10,9 @@ import { TokenCompletionItem, IrregularCompletionItem } from './tokenCompletionI
 import constants from './constants';
 
 export class IssueCompletionItem extends TokenCompletionItem {
-  public readonly issue: IGitIssue;
+  public readonly issue: GitIssue;
 
-  constructor(issue: IGitIssue) {
+  constructor(issue: GitIssue) {
     super(issue.number.toString(), vscode.CompletionItemKind.Issue);
 
     this.issue = issue;
@@ -28,10 +28,10 @@ export class FooterCompletionItemManager {
   private readonly _noCommitsItem: TokenCompletionItem;
   private readonly _issuePaginationMap = new Map<string, number>();
 
-  private readonly _git: IGitService;
-  private readonly _config: IConfiguration;
+  private readonly _git: GitService;
+  private readonly _config: Configuration;
 
-  constructor(triggerSuggestCommandId: string, git: IGitService, config: IConfiguration) {
+  constructor(triggerSuggestCommandId: string, git: GitService, config: Configuration) {
     this.typeItems = constants.footerTypes.map((e) => {
       const item = new IrregularCompletionItem(e.type);
       item.detail = e.title;
